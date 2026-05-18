@@ -180,4 +180,25 @@
 
 **User confirmed. 2-3 marked complete.**
 
+## 2026-05-19 — Phase 2-4: Plans Screens
+
+**What was done:**
+- Created `lib/models/subscription_plan.dart` — `SubscriptionPlan`, `PlanPricing`, and `PlanMealSlot` models. `startingPrice` getter returns the minimum price across all pricing rows. `availableDurations` and `availableMealsPerDay` computed lists drive the selection chips in the correct logical order. `pricingFor(duration, mealsPerDay)` looks up the selected price combination.
+- Created `lib/services/plan_service.dart` — `fetchPlans()` with `plan_pricing` join, `fetchFeaturedPlans()` filtered by `is_featured`, and `fetchPlanBySlug()` with full detail join (`plan_pricing` + `plan_meal_slots` + nested meal names).
+- Created `lib/providers/plan_provider.dart` — `plansProvider`, `featuredPlansProvider`, and `planBySlugProvider(slug)` family provider. Ran build_runner to generate `plan_provider.g.dart`.
+- Created `lib/widgets/plan_card/plan_card.dart` — container with olive left border (4px), olive type badge, plan name, 2-line description, "From Rs. X" price, and trailing arrow.
+- Implemented `lib/screens/plans/plans_screen.dart` — `ConsumerWidget` with `ListView.separated`, pull-to-refresh, empty and error states. AppBar title uses RichText (Inter bold + Cormorant serif).
+- Implemented `lib/screens/plan_detail/plan_detail_screen.dart` — `ConsumerStatefulWidget` with `_selectedDuration` and `_selectedMealsPerDay` state. `_initSelection()` lazily defaults to the cheapest pricing option on first data load. Duration and meals-per-day `_SelectChip` widgets (animated, olive when selected). Live price display in a cream container. Schedule section renders a `_ScheduleView` (grouped by day mon→sun, slot breakfast→lunch→dinner) or a plain text message for `scheduleMode == 'message'`. Add to Cart button is disabled until both options are selected.
+- Updated home screen `_OurPlansSection` to watch `featuredPlansProvider` and display a vertical list of PlanCards with a "View All Plans" link — replaces the earlier placeholder.
+
+**Why done this way:**
+- `availableDurations` filters `_durationOrder` (a const list in logical week order) rather than using the DB order — ensures chips always appear 1 Week → 2 Weeks → 1 Month regardless of insertion order.
+- `_initSelection()` checks `_selectedDuration != null` before setting state so it only runs once on the first data frame, not on every hot-reload or provider refresh.
+- Schedule view groups slots using `_dayOrder`/`_slotOrder` const lists so the layout is deterministic even if DB rows are unordered.
+
+**Issues / blockers:**
+- None. Zero analyzer issues, dart format clean.
+
+**User confirmed. 2-4 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

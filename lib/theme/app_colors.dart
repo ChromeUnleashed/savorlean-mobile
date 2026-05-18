@@ -19,7 +19,9 @@ class AppColors {
   // Call-to-action red — all primary filled buttons and key interactive elements
   static const Color cta = Color(0xFF9B4E38);
   static const Color ctaHover = Color(0xFF7D3C2A);
-  static const Color ctaLight = Color(0xFFB5766D); // softer CTA — used on image overlays
+  static const Color ctaLight = Color(
+    0xFFB5766D,
+  ); // softer CTA — used on image overlays
 
   // Page and surface backgrounds
   static const Color bg = Color(0xFFFFFFFF); // main white page background

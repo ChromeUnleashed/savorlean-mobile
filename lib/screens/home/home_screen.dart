@@ -15,6 +15,8 @@ import '../../models/carousel_slide.dart';
 import '../../models/testimonial.dart';
 import '../../providers/home_provider.dart';
 import '../../providers/meal_provider.dart';
+import '../../providers/plan_provider.dart';
+import '../../widgets/plan_card/plan_card.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/loading_indicator.dart';
@@ -78,24 +80,83 @@ class HomeScreen extends ConsumerWidget {
           ),
         SliverToBoxAdapter(child: _CarouselSection(slides: data.slides)),
         const SliverToBoxAdapter(child: _FeaturedMealsSection()),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(text: 'Our ', style: AppTextStyles.headingBold),
-                  TextSpan(text: 'Plans', style: AppTextStyles.headingSerif),
-                ],
-              ),
-            ),
-          ),
-        ),
+        const SliverToBoxAdapter(child: _OurPlansSection()),
         SliverToBoxAdapter(
           child: _TestimonialSection(testimonials: data.testimonials),
         ),
         const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
       ],
+    );
+  }
+}
+
+class _OurPlansSection extends ConsumerWidget {
+  const _OurPlansSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(featuredPlansProvider);
+    return async.when(
+      data: (plans) {
+        if (plans.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 32, 16, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Our ',
+                            style: AppTextStyles.headingBold,
+                          ),
+                          TextSpan(
+                            text: 'Plans',
+                            style: AppTextStyles.headingSerif,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => context.push('/plans'),
+                    child: Text(
+                      'View All',
+                      style: AppTextStyles.inter(
+                        fontSize: 13,
+                        color: AppColors.cta,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Column(
+                children: plans
+                    .map(
+                      (plan) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: PlanCard(
+                          plan: plan,
+                          onTap: () => context.push('/plans/${plan.slug}'),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 }

@@ -133,6 +133,9 @@ class AppButton extends StatelessWidget {
         ),
       );
     }
-    return Text(label.toUpperCase(), style: AppTextStyles.button.copyWith(color: spinnerColor));
+    return Text(
+      label.toUpperCase(),
+      style: AppTextStyles.button.copyWith(color: spinnerColor),
+    );
   }
 }

@@ -70,13 +70,13 @@
 - [x] `AppColors.ctaLight` (#B5766D) added; `AppButtonVariant.ctaLight` added to AppButton
 - [x] Fixed AppButton text color bug (was ignoring foregroundColor due to hardcoded style color)
 
-### 2-4 — Plans Screens
-- [ ] `lib/models/subscription_plan.dart`
-- [ ] `lib/services/plan_service.dart` — fetch plans, fetch plan with meals
-- [ ] `lib/providers/plan_provider.dart`
-- [ ] `lib/widgets/plan_card/plan_card.dart`
-- [ ] `lib/screens/plans/plans_screen.dart`
-- [ ] `lib/screens/plan_detail/plan_detail_screen.dart`
+### 2-4 — Plans Screens ✅
+- [x] `lib/models/subscription_plan.dart`
+- [x] `lib/services/plan_service.dart` — fetch plans, fetch plan with meals
+- [x] `lib/providers/plan_provider.dart`
+- [x] `lib/widgets/plan_card/plan_card.dart`
+- [x] `lib/screens/plans/plans_screen.dart`
+- [x] `lib/screens/plan_detail/plan_detail_screen.dart`
 
 **Phase 2 Sign-Off Checklist:**
 - [ ] Home loads real carousel, meals, plans, testimonials from DB
