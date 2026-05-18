@@ -110,4 +110,55 @@
 
 **User confirmed. 1-4 marked complete.**
 
+## 2026-05-18 — Phase 2-1: Home Screen
+
+**What was done:**
+- Created `lib/models/carousel_slide.dart` and `lib/models/testimonial.dart`.
+- Created `lib/services/settings_service.dart` querying `carousel_slides`, `reviews`, and `site_content`.
+- Created `lib/providers/home_provider.dart` with `homeDataProvider` fetching all data concurrently.
+- Created `lib/screens/home/home_screen.dart` — hero carousel with auto-advance timer (4s), animated pill dots, announcement bar, and testimonials section.
+- "Featured Meals" and "Our Plans" sections are deliberate placeholders — `MealCard` and `PlanCard` widgets don't exist yet (Phase 2-2/2-4).
+
+**Schema corrections discovered during testing:**
+- `carousel_slides` uses `headline`/`sub_headline`/`cta_link` not `title`/`subtitle`/`link`. Fixed in model.
+- `carousel_slides` has `sort_order` and `is_active` columns — query now filters active and orders by sort_order.
+- No `testimonials` table exists — the table is named `reviews` and is scoped to meal reviews (not marketing testimonials). Table is currently empty so the section hides itself.
+- `reviews` uses `body` not `content` for the review text. Fixed in model.
+
+**Why done this way:**
+- Errors from carousel/testimonial queries were initially swallowed by try-catch blocks (from another agent), making the screen appear to load but with no content. Removed try-catch from data queries so failures surface in the UI error state with a retry button.
+- `_CarouselSection` is a `StatefulWidget` to hold the `PageController` and `Timer`. Auto-advance skips if only one slide. Timer is cancelled in `dispose()`.
+
+**Issues / blockers:**
+- None after schema corrections.
+
+**User confirmed. 2-1 marked complete.**
+
+## 2026-05-18 — Phase 2-2: Menu Screen
+
+**What was done:**
+- Created `lib/models/category.dart` and `lib/models/meal.dart` mapped exactly to the Supabase schema.
+- Created `lib/services/meal_service.dart` with `fetchCategories`, `fetchMeals` (with optional category filter), `fetchFeaturedMeals`, and `fetchMealBySlug`.
+- Created `lib/providers/meal_provider.dart` with `mealServiceProvider`, `categoriesProvider`, `selectedCategoryIdProvider` (notifier), `mealsProvider`, and `featuredMealsProvider`. Ran build_runner to generate `meal_provider.g.dart`.
+- Created `lib/widgets/meal_card/meal_card.dart` — image, category label, name, price (Rs. X), wishlist heart (non-functional until Phase 4-3).
+- Implemented `lib/screens/menu/menu_screen.dart` — search bar, animated category chips (olive when selected), 2-column SliverGrid, pull-to-refresh, empty/error states.
+- Updated home screen to replace "Featured Meals Placeholder" with a real horizontal scroll of featured meals using `featuredMealsProvider`.
+- Fixed default widget test (was referencing removed `MyApp` class).
+
+**Schema notes:**
+- `meals.images` is a `text[]` array — use `images[0]` as the card image via a `imageUrl` getter.
+- `meals.id` is `text`, not `uuid`.
+- Category join: `.select('*, categories!meals_category_id_fkey(id, name, slug)')` gives nested `categories` object with the meal's category name.
+- `categories` has `sort_order` and `is_active` — query filters active and orders by sort_order.
+
+**Why done this way:**
+- Category chip selection uses a `SelectedCategoryId` Riverpod notifier so changing the category automatically re-fetches meals via `mealsProvider` watching it.
+- Search is handled client-side (local state) — no re-fetch needed, fast UX.
+- `_Chip` uses `AnimatedContainer` instead of Flutter's `FilterChip`/`ChoiceChip` to match the brand's square (2px radius) style with olive active color.
+
+**Issues / blockers:**
+- None. Zero analyzer issues, dart format clean.
+
+**User confirmed. 2-2 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

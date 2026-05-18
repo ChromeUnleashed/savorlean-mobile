@@ -49,19 +49,20 @@
 ## Phase 2 — Home & Menu
 **Goal:** Real content from DB displayed on home and menu screens, meal detail working.
 
-### 2-1 — Home Screen
-- [ ] `lib/models/carousel_slide.dart`
-- [ ] `lib/models/testimonial.dart`
-- [ ] `lib/services/settings_service.dart` — `site_content`, `carousel_slides`, `testimonials` queries
-- [ ] `lib/screens/home/home_screen.dart` — carousel, featured meals, our plans, testimonials, announcement bar
+### 2-1 — Home Screen ✅
+- [x] `lib/models/carousel_slide.dart`
+- [x] `lib/models/testimonial.dart`
+- [x] `lib/services/settings_service.dart` — `site_content`, `carousel_slides`, `reviews` queries
+- [x] `lib/screens/home/home_screen.dart` — carousel (auto-advance + dots), announcement bar, testimonials (hidden when empty); featured meals + plans are placeholders until 2-2/2-4
 
-### 2-2 — Menu Screen
-- [ ] `lib/models/meal.dart`
-- [ ] `lib/models/category.dart`
-- [ ] `lib/services/meal_service.dart` — fetch all meals, fetch by category
-- [ ] `lib/providers/meal_provider.dart`
-- [ ] `lib/widgets/meal_card/meal_card.dart` — image, name, category chip, price, wishlist heart
-- [ ] `lib/screens/menu/menu_screen.dart` — category filter chips, GridView, search bar, pull-to-refresh
+### 2-2 — Menu Screen ✅
+- [x] `lib/models/meal.dart`
+- [x] `lib/models/category.dart`
+- [x] `lib/services/meal_service.dart` — fetch all meals, fetch by category
+- [x] `lib/providers/meal_provider.dart`
+- [x] `lib/widgets/meal_card/meal_card.dart` — image, name, category chip, price, wishlist heart
+- [x] `lib/screens/menu/menu_screen.dart` — category filter chips, GridView, search bar, pull-to-refresh
+- [x] Home screen updated with real Featured Meals horizontal scroll (is_featured=true meals)
 
 ### 2-3 — Meal Detail Screen
 - [ ] `lib/screens/meal_detail/meal_detail_screen.dart` — hero image, name, price, description, nutrition, ingredients, tags, add-to-cart, wishlist
