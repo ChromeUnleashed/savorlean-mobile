@@ -1,8 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/cart_item.dart';
 import '../models/meal.dart';
+import '../models/promo_code.dart';
 import '../models/subscription_plan.dart';
+import '../services/promo_service.dart';
 
 part 'cart_provider.g.dart';
 
@@ -56,6 +59,7 @@ class Cart extends _$Cart {
           name: plan.name,
           unitPricePkr: pricing.pricePkr,
           quantity: 1,
+          planDuration: pricing.duration,
           planDurationLabel: pricing.durationLabel,
           planMealsPerDay: pricing.mealsPerDay,
         ),
@@ -93,9 +97,32 @@ class Cart extends _$Cart {
 }
 
 @riverpod
+class AppliedPromo extends _$AppliedPromo {
+  @override
+  PromoCode? build() => null;
+
+  void apply(PromoCode promo) => state = promo;
+  void clear() => state = null;
+}
+
+@riverpod
+PromoService promoService(Ref ref) => PromoService(Supabase.instance.client);
+
+@riverpod
 int cartItemCount(Ref ref) =>
     ref.watch(cartProvider).fold(0, (sum, item) => sum + item.quantity);
 
 @riverpod
 int cartSubtotal(Ref ref) =>
     ref.watch(cartProvider).fold(0, (sum, item) => sum + item.lineTotalPkr);
+
+@riverpod
+int cartDiscount(Ref ref) {
+  final promo = ref.watch(appliedPromoProvider);
+  if (promo == null) return 0;
+  return promo.discountFor(ref.watch(cartSubtotalProvider));
+}
+
+@riverpod
+int cartTotal(Ref ref) =>
+    ref.watch(cartSubtotalProvider) - ref.watch(cartDiscountProvider);

@@ -34,6 +34,7 @@ import '../screens/account/wishlist/wishlist_screen.dart';
 import '../screens/auth/forgot_password/forgot_password_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
+import '../models/placed_order.dart';
 import '../screens/cart/cart_screen.dart';
 import '../screens/checkout/checkout_screen.dart';
 import '../screens/home/home_screen.dart';
@@ -186,11 +187,16 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: 'confirmation',
-          builder: (context, state) => const OrderConfirmationScreen(),
+          builder: (context, state) {
+            final order = state.extra as PlacedOrder?;
+            if (order == null) return const _NoOrderScreen();
+            return OrderConfirmationScreen(order: order);
+          },
         ),
       ],
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
@@ -201,3 +207,27 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+// Shown if someone navigates directly to /checkout/confirmation with no order data.
+class _NoOrderScreen extends StatelessWidget {
+  const _NoOrderScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('No order data found.'),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => context.go('/'),
+              child: const Text('Go home'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

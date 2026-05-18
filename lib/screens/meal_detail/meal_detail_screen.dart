@@ -232,15 +232,20 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   label: 'Add to Cart — Rs. ${meal.pricePkr * _quantity}',
                   onPressed: () {
                     ref.read(cartProvider.notifier).addMeal(meal, _quantity);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.clearSnackBars();
+                    final entry = messenger.showSnackBar(
                       SnackBar(
                         content: Text('${meal.name} added to cart'),
-                        behavior: SnackBarBehavior.floating,
                         action: SnackBarAction(
                           label: 'Open Cart',
                           onPressed: () => context.go('/cart'),
                         ),
                       ),
+                    );
+                    Future.delayed(
+                      const Duration(seconds: 3),
+                      entry.close,
                     );
                   },
                   variant: AppButtonVariant.ctaLight,

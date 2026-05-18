@@ -132,10 +132,11 @@ class AppTheme {
       space: 1,
     ),
 
-    // Snackbars — dark background, floating style.
+    // Snackbars — olive background, floating style.
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.textPrimary,
+      backgroundColor: AppColors.olive,
       contentTextStyle: AppTextStyles.inter(color: Colors.white),
+      actionTextColor: AppColors.oliveSoft,
       behavior: SnackBarBehavior.floating,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2)),

@@ -231,15 +231,20 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                           ref
                               .read(cartProvider.notifier)
                               .addPlan(plan, selectedPricing);
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          final entry = messenger.showSnackBar(
                             SnackBar(
                               content: Text('${plan.name} added to cart'),
-                              behavior: SnackBarBehavior.floating,
                               action: SnackBarAction(
                                 label: 'Open Cart',
                                 onPressed: () => context.go('/cart'),
                               ),
                             ),
+                          );
+                          Future.delayed(
+                            const Duration(seconds: 3),
+                            entry.close,
                           );
                         }
                       : null,

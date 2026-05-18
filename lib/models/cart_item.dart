@@ -10,6 +10,7 @@ class CartItem {
     this.imageUrl,
     required this.unitPricePkr,
     required this.quantity,
+    this.planDuration,
     this.planDurationLabel,
     this.planMealsPerDay,
   });
@@ -21,7 +22,8 @@ class CartItem {
   final String? imageUrl;
   final int unitPricePkr;
   final int quantity;
-  final String? planDurationLabel;
+  final String? planDuration; // raw key e.g. "1_week"
+  final String? planDurationLabel; // human label e.g. "1 Week"
   final int? planMealsPerDay;
 
   int get lineTotalPkr => unitPricePkr * quantity;
@@ -41,6 +43,7 @@ class CartItem {
     imageUrl: imageUrl,
     unitPricePkr: unitPricePkr,
     quantity: quantity ?? this.quantity,
+    planDuration: planDuration,
     planDurationLabel: planDurationLabel,
     planMealsPerDay: planMealsPerDay,
   );
