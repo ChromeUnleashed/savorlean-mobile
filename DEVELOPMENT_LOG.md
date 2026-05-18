@@ -201,4 +201,26 @@
 
 **User confirmed. 2-4 marked complete.**
 
+## 2026-05-19 — Phase 3-1: Cart
+
+**What was done:**
+- Created `lib/models/cart_item.dart` — immutable `CartItem` with `mealId`/`planId` (only one set), `unitPricePkr`, `quantity`, optional `planDurationLabel`/`planMealsPerDay`. `lineTotalPkr` computed, `subtitle` derived string, `copyWith` for quantity updates.
+- Created `lib/providers/cart_provider.dart` — `Cart` Riverpod notifier: `addMeal` (deduplicates by mealId, increments if already in cart), `addPlan` (cartId keyed on `planId_duration_mealsPerDay`), `increment`, `decrement` (removes at 0), `remove`, `clear`. Derived providers: `cartItemCountProvider` (total quantity across all items), `cartSubtotalProvider`.
+- Created `lib/widgets/cart_item_tile/cart_item_tile.dart` — image (64×64, cached, falls back to icon for plans), name + price row, subtitle row, +/− quantity controls, "Remove" text link.
+- Implemented `lib/screens/cart/cart_screen.dart` — empty state (icon + message + "Browse Menu" secondary button), items list, promo code field (stub, Apply button disabled until Phase 3-2), cream summary box (subtotal, delivery: Free, total), "Proceed to Checkout" primary button (`context.push('/checkout')` — router redirect handles auth guard).
+- Updated `lib/widgets/bottom_nav_bar/bottom_nav_bar.dart` — converted to `ConsumerWidget`, watches `cartItemCountProvider`, wraps Cart icon in Flutter `Badge` (CTA red, hidden when count is 0).
+- Wired Add to Cart in `MealDetailScreen` — calls `cartProvider.notifier.addMeal(meal, _quantity)`, shows floating snackbar with "Open Cart" action (`context.go('/cart')`).
+- Wired Add to Cart in `PlanDetailScreen` — calls `cartProvider.notifier.addPlan(plan, selectedPricing)`, same snackbar pattern.
+
+**Why done this way:**
+- Cart deduplication by ID (meal) or composite key (plan+duration+meals) means tapping "Add to Cart" twice on the same meal just increments quantity rather than creating a duplicate line item.
+- `cartItemCount` is a separate derived provider (not a getter on the notifier) so the bottom nav bar only rebuilds when the count changes, not on every cart mutation.
+- Plan image is `null` in CartItem — the `subscription_plans` table has no `image_url` column. The tile falls back to a `restaurant_menu` icon in this case.
+- Promo code field is included in the cart UI but the Apply button is disabled (`onPressed: null`) — it renders the full layout so Phase 3-2 only needs to add the validation logic without restructuring the screen.
+
+**Issues / blockers:**
+- None. Zero analyzer issues, dart format clean.
+
+**User confirmed. 3-1 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

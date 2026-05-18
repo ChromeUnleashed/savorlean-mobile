@@ -91,12 +91,12 @@
 ## Phase 3 — Cart & Checkout
 **Goal:** Full end-to-end order placement working.
 
-### 3-1 — Cart
-- [ ] `lib/providers/cart_provider.dart` — in-memory cart (meals + plans, quantity +/-)
-- [ ] `lib/widgets/cart_item_tile/cart_item_tile.dart`
-- [ ] `lib/screens/cart/cart_screen.dart` — items list, quantity controls, remove, promo field, total
-- [ ] Cart badge on bottom nav updates live from provider
-- [ ] "Proceed to Checkout" auth guard
+### 3-1 — Cart ✅
+- [x] `lib/providers/cart_provider.dart` — in-memory cart (meals + plans, quantity +/-)
+- [x] `lib/widgets/cart_item_tile/cart_item_tile.dart`
+- [x] `lib/screens/cart/cart_screen.dart` — items list, quantity controls, remove, promo field, total
+- [x] Cart badge on bottom nav updates live from provider
+- [x] "Proceed to Checkout" auth guard
 
 ### 3-2 — Promo Code Validation
 - [ ] `lib/models/promo_code.dart`

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../models/meal.dart';
+import '../../providers/cart_provider.dart';
 import '../../providers/meal_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -228,7 +230,19 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 const SizedBox(height: 20),
                 AppButton(
                   label: 'Add to Cart — Rs. ${meal.pricePkr * _quantity}',
-                  onPressed: () {}, // wired up in Phase 3-1
+                  onPressed: () {
+                    ref.read(cartProvider.notifier).addMeal(meal, _quantity);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${meal.name} added to cart'),
+                        behavior: SnackBarBehavior.floating,
+                        action: SnackBarAction(
+                          label: 'Open Cart',
+                          onPressed: () => context.go('/cart'),
+                        ),
+                      ),
+                    );
+                  },
                   variant: AppButtonVariant.ctaLight,
                   fullWidth: true,
                 ),

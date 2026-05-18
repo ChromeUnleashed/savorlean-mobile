@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../models/subscription_plan.dart';
+import '../../providers/cart_provider.dart';
 import '../../providers/plan_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -225,8 +227,22 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                       ? 'Add to Cart — Rs. ${selectedPricing.pricePkr}'
                       : 'Select Options to Continue',
                   onPressed: selectedPricing != null
-                      ? () {}
-                      : null, // Phase 3-1
+                      ? () {
+                          ref
+                              .read(cartProvider.notifier)
+                              .addPlan(plan, selectedPricing);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${plan.name} added to cart'),
+                              behavior: SnackBarBehavior.floating,
+                              action: SnackBarAction(
+                                label: 'Open Cart',
+                                onPressed: () => context.go('/cart'),
+                              ),
+                            ),
+                          );
+                        }
+                      : null,
                   variant: AppButtonVariant.ctaLight,
                   fullWidth: true,
                 ),
