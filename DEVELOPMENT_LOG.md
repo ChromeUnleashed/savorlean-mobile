@@ -48,4 +48,27 @@
 
 **User confirmed. 1-1 marked complete. Committed as `feat(setup): Phase 1-1 scaffold and environment`.**
 
+---
+
+## 2026-05-18 — Phase 1-2: Theme & Design System
+
+**What was done:**
+- Created `lib/theme/app_colors.dart` — 13 named color constants mirroring the web app's CSS custom properties exactly.
+- Created `lib/theme/app_text_styles.dart` — Inter (body/UI) and Cormorant Garamond (italic serif headings) via `google_fonts`. Provides both a flexible builder API and pre-named styles (headingBold, headingSerif, body, bodyMuted, label, price, button, sectionTitle).
+- Created `lib/theme/app_theme.dart` — full Material 3 ThemeData covering colorScheme, textTheme, elevatedButtonTheme, outlinedButtonTheme, appBarTheme, inputDecorationTheme, chipTheme, dividerTheme, and snackBarTheme. All values derived from AppColors and AppTextStyles.
+- Created `lib/widgets/common/app_button.dart` — three variants (primary/secondary/olive), loading state with spinner, optional full-width mode. Uses a `switch` expression for clean variant routing.
+- Created `lib/widgets/common/loading_indicator.dart` — AppLoadingIndicator (CTA-red spinner) and AppSkeletonBox (pulsing opacity animation for skeleton layouts).
+- Updated `lib/main.dart` to wire `AppTheme.light` into MaterialApp.
+
+**Why done this way:**
+- AppColors and AppTextStyles are pure static classes (no instantiation) — easy to reference from anywhere without a provider or context.
+- google_fonts loads Inter and Cormorant Garamond at runtime — no manual font asset management needed.
+- AppSkeletonBox uses opacity animation rather than a shimmer gradient — simpler, no extra package, and looks clean against the off-white surface color.
+- `withValues(alpha:)` used instead of deprecated `withOpacity()` for disabled button states.
+
+**Issues / blockers:**
+- None. `dart analyze` passes with zero issues.
+
+**Awaiting user confirmation to mark 1-2 complete in todo.md.**
+
 <!-- New entries go below this line, newest at the bottom -->

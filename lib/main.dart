@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'theme/app_theme.dart';
 
 // Supabase credentials are injected at build/run time — never hardcoded here.
 // Copy dart_defines.example.json → dart_defines.json and fill in real values.
@@ -40,6 +41,7 @@ class SavorLeanApp extends StatelessWidget {
     return MaterialApp(
       title: 'SavorLean',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       // Temporary placeholder — replaced by GoRouter in Phase 1-3.
       home: const Scaffold(body: Center(child: Text('SavorLean'))),
     );

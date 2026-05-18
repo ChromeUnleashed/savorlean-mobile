@@ -15,12 +15,12 @@
 - [x] Initialise Supabase in `main.dart` (`Supabase.initialize` using `--dart-define` values)
 - [x] Update `pubspec.yaml` description and app metadata to reflect SavorLean
 
-### 1-2 — Theme & Design System
-- [ ] `lib/theme/app_colors.dart` — all color constants from design system
-- [ ] `lib/theme/app_text_styles.dart` — Inter + Cormorant Garamond text styles
-- [ ] `lib/theme/app_theme.dart` — `ThemeData` wiring (colorScheme, textTheme, buttonTheme)
-- [ ] `lib/widgets/common/app_button.dart` — primary + secondary variants
-- [ ] `lib/widgets/common/loading_indicator.dart` — branded spinner / skeleton base
+### 1-2 — Theme & Design System ✅
+- [x] `lib/theme/app_colors.dart` — all color constants from design system
+- [x] `lib/theme/app_text_styles.dart` — Inter + Cormorant Garamond text styles
+- [x] `lib/theme/app_theme.dart` — `ThemeData` wiring (colorScheme, textTheme, buttonTheme)
+- [x] `lib/widgets/common/app_button.dart` — primary + secondary variants
+- [x] `lib/widgets/common/loading_indicator.dart` — branded spinner / skeleton base
 
 ### 1-3 — Navigation Shell
 - [ ] `lib/router/router.dart` — all routes declared with go_router (screens as stubs)
