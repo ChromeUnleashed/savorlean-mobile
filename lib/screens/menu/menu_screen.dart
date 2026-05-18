@@ -106,7 +106,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                         final meal = filtered[i];
                         return MealCard(
                           meal: meal,
-                          onTap: () => context.go('/menu/${meal.slug}'),
+                          onTap: () => context.push('/menu/${meal.slug}'),
                         );
                       }, childCount: filtered.length),
                     ),

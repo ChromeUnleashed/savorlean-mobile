@@ -35,3 +35,8 @@ Future<List<Meal>> meals(Ref ref) async {
 Future<List<Meal>> featuredMeals(Ref ref) async {
   return ref.watch(mealServiceProvider).fetchFeaturedMeals();
 }
+
+@riverpod
+Future<Meal?> mealBySlug(Ref ref, String slug) async {
+  return ref.watch(mealServiceProvider).fetchMealBySlug(slug);
+}

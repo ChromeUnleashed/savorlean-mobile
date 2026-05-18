@@ -161,4 +161,23 @@
 
 **User confirmed. 2-2 marked complete.**
 
+## 2026-05-18 — Phase 2-3: Meal Detail Screen
+
+**What was done:**
+- Added `mealBySlugProvider(String slug)` (family provider) to `meal_provider.dart` and regenerated.
+- Switched meal card taps from `context.go()` to `context.push()` in menu and home screens so the back button on the detail screen correctly returns to the previous tab.
+- Implemented full `MealDetailScreen`: expandable `SliverAppBar` with hero image, circular back/heart overlay buttons, category label + Bestseller/Featured badges, meal name, price, description, 4-box nutrition grid, ingredients, tag chips, quantity selector (+/-), and Add to Cart button showing the live total.
+- Added `AppColors.ctaLight` (#B5766D) and `AppButtonVariant.ctaLight` for the Add to Cart button style.
+- Fixed a bug in `AppButton._buildChild` where `AppTextStyles.button` hardcoded `AppColors.textPrimary`, overriding `foregroundColor`. Fixed by passing `spinnerColor` into `copyWith(color:)` so text color matches the variant.
+
+**Why done this way:**
+- `context.push()` vs `context.go()`: `push` preserves the shell route in the navigator stack, enabling `Navigator.of(context).pop()` to return to the menu. `go` would have replaced the stack.
+- Add to Cart and wishlist heart are present in the UI but no-op — they'll be wired to `cart_provider` (Phase 3-1) and `wishlist_provider` (Phase 4-3) respectively.
+- `mealBySlugProvider` is a Riverpod family provider — takes `slug` as a parameter and calls `fetchMealBySlug`. Each unique slug gets its own cached future.
+
+**Issues / blockers:**
+- None. Zero analyzer issues.
+
+**User confirmed. 2-3 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

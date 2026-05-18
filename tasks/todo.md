@@ -64,8 +64,11 @@
 - [x] `lib/screens/menu/menu_screen.dart` — category filter chips, GridView, search bar, pull-to-refresh
 - [x] Home screen updated with real Featured Meals horizontal scroll (is_featured=true meals)
 
-### 2-3 — Meal Detail Screen
-- [ ] `lib/screens/meal_detail/meal_detail_screen.dart` — hero image, name, price, description, nutrition, ingredients, tags, add-to-cart, wishlist
+### 2-3 — Meal Detail Screen ✅
+- [x] `lib/screens/meal_detail/meal_detail_screen.dart` — hero image (SliverAppBar), name, category, price, Bestseller/Featured badges, description, nutrition grid, ingredients, tag chips, quantity selector, Add to Cart button (Phase 3-1), wishlist heart (Phase 4-3)
+- [x] `mealBySlugProvider` added to `meal_provider.dart`
+- [x] `AppColors.ctaLight` (#B5766D) added; `AppButtonVariant.ctaLight` added to AppButton
+- [x] Fixed AppButton text color bug (was ignoring foregroundColor due to hardcoded style color)
 
 ### 2-4 — Plans Screens
 - [ ] `lib/models/subscription_plan.dart`

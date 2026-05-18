@@ -19,6 +19,9 @@ enum AppButtonVariant {
 
   /// Filled olive-green button — used in the announcement bar and brand moments.
   olive,
+
+  /// Softer CTA button (#B5766D) — used on image overlays and meal detail.
+  ctaLight,
 }
 
 /// A SavorLean-branded button.
@@ -95,6 +98,20 @@ class AppButton extends StatelessWidget {
         ),
         child: _buildChild(spinnerColor: Colors.white),
       ),
+      AppButtonVariant.ctaLight => ElevatedButton(
+        onPressed: effectiveOnPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.ctaLight,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: AppColors.ctaLight.withValues(alpha: 0.6),
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(2)),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        ),
+        child: _buildChild(spinnerColor: Colors.white),
+      ),
     };
 
     // Wrap in a SizedBox to make the button fill its parent width if requested.
@@ -116,6 +133,6 @@ class AppButton extends StatelessWidget {
         ),
       );
     }
-    return Text(label.toUpperCase(), style: AppTextStyles.button);
+    return Text(label.toUpperCase(), style: AppTextStyles.button.copyWith(color: spinnerColor));
   }
 }

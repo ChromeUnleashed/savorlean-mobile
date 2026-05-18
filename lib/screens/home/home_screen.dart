@@ -139,7 +139,7 @@ class _FeaturedMealsSection extends ConsumerWidget {
                     width: 160,
                     child: MealCard(
                       meal: meal,
-                      onTap: () => context.go('/menu/${meal.slug}'),
+                      onTap: () => context.push('/menu/${meal.slug}'),
                     ),
                   );
                 },

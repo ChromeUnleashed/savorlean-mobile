@@ -217,3 +217,72 @@ final class FeaturedMealsProvider
 }
 
 String _$featuredMealsHash() => r'f9cb0b68b2fb91254f402ea87a8baeb3a08db827';
+
+@ProviderFor(mealBySlug)
+final mealBySlugProvider = MealBySlugFamily._();
+
+final class MealBySlugProvider
+    extends $FunctionalProvider<AsyncValue<Meal?>, Meal?, FutureOr<Meal?>>
+    with $FutureModifier<Meal?>, $FutureProvider<Meal?> {
+  MealBySlugProvider._({
+    required MealBySlugFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'mealBySlugProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$mealBySlugHash();
+
+  @override
+  String toString() {
+    return r'mealBySlugProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Meal?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Meal?> create(Ref ref) {
+    final argument = this.argument as String;
+    return mealBySlug(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MealBySlugProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$mealBySlugHash() => r'b5c6dd831dc2465518a6092a16bd81d144868a6c';
+
+final class MealBySlugFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Meal?>, String> {
+  MealBySlugFamily._()
+    : super(
+        retry: null,
+        name: r'mealBySlugProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  MealBySlugProvider call(String slug) =>
+      MealBySlugProvider._(argument: slug, from: this);
+
+  @override
+  String toString() => r'mealBySlugProvider';
+}
