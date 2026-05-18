@@ -71,4 +71,24 @@
 
 **Awaiting user confirmation to mark 1-2 complete in todo.md.**
 
+---
+
+## 2026-05-18 — Phase 1-3: Navigation Shell
+
+**What was done:**
+- Created 16 stub screens covering all routes (home, menu, meal detail, plans, plan detail, cart, checkout, order confirmation, login, register, forgot password, account home, order history, order detail, wishlist, edit profile).
+- Created `lib/router/router.dart` — full go_router setup with ShellRoute (bottom nav tabs) and top-level routes (no nav bar). Auth redirect guard implemented via global `redirect` function + `_AuthChangeNotifier` (listens to Supabase auth stream, notifies go_router to re-evaluate on state change). Protected routes: `/account/*` and `/checkout`.
+- Created `lib/widgets/bottom_nav_bar/bottom_nav_bar.dart` — NavigationBar with olive active indicator and brand colors. Active tab derived from `state.matchedLocation` in ShellRoute builder.
+- Updated `lib/main.dart` — switched from `MaterialApp` to `MaterialApp.router` with `routerConfig: appRouter`.
+
+**Why done this way:**
+- The auth redirect guard lives in the global `redirect` function rather than per-route — simpler to maintain and avoids duplication.
+- `_AuthChangeNotifier` wraps the Supabase auth stream as a `ChangeNotifier`, which is the standard go_router pattern for auth-aware routing without Riverpod coupling at the router level.
+- Active tab index is derived in the ShellRoute builder from `state.matchedLocation` rather than tracking state separately — no extra provider needed.
+
+**Issues / blockers:**
+- None. Zero analyzer issues. User confirmed navigation works on emulator.
+
+**User confirmed. 1-3 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

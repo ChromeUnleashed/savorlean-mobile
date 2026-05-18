@@ -22,11 +22,11 @@
 - [x] `lib/widgets/common/app_button.dart` — primary + secondary variants
 - [x] `lib/widgets/common/loading_indicator.dart` — branded spinner / skeleton base
 
-### 1-3 — Navigation Shell
-- [ ] `lib/router/router.dart` — all routes declared with go_router (screens as stubs)
-- [ ] `ShellRoute` for bottom nav bar
-- [ ] `lib/widgets/bottom_nav_bar/bottom_nav_bar.dart` — Home, Menu, Cart (badge), Account tabs
-- [ ] Auth redirect guard on `/account/*` and `/checkout`
+### 1-3 — Navigation Shell ✅
+- [x] `lib/router/router.dart` — all routes declared with go_router (screens as stubs)
+- [x] `ShellRoute` for bottom nav bar
+- [x] `lib/widgets/bottom_nav_bar/bottom_nav_bar.dart` — Home, Menu, Cart (badge), Account tabs
+- [x] Auth redirect guard on `/account/*` and `/checkout`
 
 ### 1-4 — Auth Screens & Flow
 - [ ] `lib/providers/auth_provider.dart` — stream of current user, auto-refresh session

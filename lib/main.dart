@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'router/router.dart';
 import 'theme/app_theme.dart';
 
 // Supabase credentials are injected at build/run time — never hardcoded here.
@@ -38,12 +39,13 @@ class SavorLeanApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // MaterialApp.router hands navigation control to go_router.
+    // All routes and auth guards are defined in lib/router/router.dart.
+    return MaterialApp.router(
       title: 'SavorLean',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      // Temporary placeholder — replaced by GoRouter in Phase 1-3.
-      home: const Scaffold(body: Center(child: Text('SavorLean'))),
+      routerConfig: appRouter,
     );
   }
 }
