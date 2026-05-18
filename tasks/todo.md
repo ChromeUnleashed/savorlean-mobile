@@ -29,19 +29,19 @@
 - [x] Auth redirect guard on `/account/*` and `/checkout`
 
 ### 1-4 — Auth Screens & Flow
-- [ ] `lib/providers/auth_provider.dart` — stream of current user, auto-refresh session
-- [ ] `lib/screens/auth/login/login_screen.dart` — email + password + Google Sign-In button
-- [ ] `lib/screens/auth/register/register_screen.dart` — name, email, password
-- [ ] `lib/screens/auth/forgot_password/forgot_password_screen.dart` — email input → Supabase reset email
+- [x] `lib/providers/auth_provider.dart` — stream of current user, auto-refresh session
+- [x] `lib/screens/auth/login/login_screen.dart` — email + password + Google Sign-In button
+- [x] `lib/screens/auth/register/register_screen.dart` — name, email, password
+- [x] `lib/screens/auth/forgot_password/forgot_password_screen.dart` — email input → Supabase reset email
 - [ ] Password reset deep link handling — configure URL scheme (`savorlean://`)
-- [ ] Sign-out action (clears session, redirects to home)
+- [x] Sign-out action (clears session, redirects to home)
 
 **Phase 1 Sign-Off Checklist:**
-- [ ] App launches and shows home stub without crashing
-- [ ] Can register with email/password → session persists after hot restart
-- [ ] Can sign in with Google
-- [ ] Unauthenticated user navigating to `/account` is redirected to `/login`
-- [ ] After login, redirect resolves correctly back to original path
+- [x] App launches and shows home stub without crashing
+- [x] Can register with email/password → session persists after hot restart
+- [x] Can sign in with Google
+- [x] Unauthenticated user navigating to `/account` is redirected to `/login`
+- [x] After login, redirect resolves correctly back to original path
 - [ ] Password reset email arrives and deep link opens the app
 
 ---

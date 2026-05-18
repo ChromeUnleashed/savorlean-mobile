@@ -91,4 +91,23 @@
 
 **User confirmed. 1-3 marked complete.**
 
+## 2026-05-18 — Phase 1-4: Auth Screens & Flow
+
+**What was done:**
+- Created `lib/providers/auth_provider.dart` with Riverpod streams for auth state and current user.
+- Built `LoginScreen` (email/password and Google Sign-In) and `RegisterScreen` (name, email, password) using the UI design system.
+- Built `ForgotPasswordScreen` to trigger Supabase password reset emails.
+- Updated `AndroidManifest.xml` to include an intent-filter for the `savorlean://` deep link scheme.
+- Implemented the sign-out action in `AccountHomeScreen`.
+
+**Why done this way:**
+- Using `riverpod` providers for the current user allows all screens to automatically react to auth state changes, rather than passing the user object manually.
+- The `go_router` setup handles redirecting logic automatically based on the `_AuthChangeNotifier` configured in Phase 1-3, so auth screens just call Supabase without explicit navigation boilerplate.
+- The deep link scheme is registered in AndroidManifest.xml since Android is the primary platform, handling callbacks from the Supabase reset password email flow.
+
+**Issues / blockers:**
+- iOS deep link scheme (`savorlean://`) has not been added to `Info.plist` yet, which is expected since iOS Associated Domains is scheduled for Phase 5-3, but something to note if testing on iOS.
+
+**User confirmed. 1-4 marked complete.**
+
 <!-- New entries go below this line, newest at the bottom -->

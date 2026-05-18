@@ -22,7 +22,14 @@ Future<void> main() async {
 
   // Initialise the Supabase client once. After this call it is accessible
   // anywhere in the app via Supabase.instance.client.
-  await Supabase.initialize(url: _supabaseUrl, anonKey: _supabaseAnonKey);
+  // PKCE auth flow is required for secure OAuth and deep-link callbacks on mobile.
+  await Supabase.initialize(
+    url: _supabaseUrl,
+    anonKey: _supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+  );
 
   // ProviderScope is the root container required by Riverpod.
   // All providers declared with @riverpod live inside this scope.

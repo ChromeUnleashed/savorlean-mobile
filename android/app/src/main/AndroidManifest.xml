@@ -24,6 +24,17 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Deep link handler for Supabase auth callbacks (password reset,
+                 email confirmation, Google OAuth redirect).
+                 The savorlean:// scheme must also be registered in the Supabase
+                 dashboard under Authentication → URL Configuration → Redirect URLs. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="savorlean" android:host="login-callback" />
+                <data android:scheme="savorlean" android:host="reset-callback" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
