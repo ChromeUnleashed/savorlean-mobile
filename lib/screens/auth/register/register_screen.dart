@@ -83,7 +83,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(automaticallyImplyLeading: context.canPop()),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
@@ -218,6 +223,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ),
                   ],
+                ),
+
+                // Continue as guest — lets the user browse without signing in.
+                Center(
+                  child: TextButton(
+                    style: TextButton.styleFrom(foregroundColor: AppColors.cta),
+                    onPressed: () => context.go('/'),
+                    child: Text(
+                      'Continue as guest',
+                      style: AppTextStyles.inter(
+                        fontSize: 13,
+                        color: AppColors.cta,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

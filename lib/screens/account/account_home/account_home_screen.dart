@@ -1,20 +1,23 @@
 // lib/screens/account/account_home/account_home_screen.dart
-// Account hub screen — shows user info and navigation tiles.
-// Signed-out users see login/register CTAs instead.
-// Full implementation in Phase 4-1. For Phase 1-4, sign-out is wired
-// so the full auth cycle can be tested end-to-end.
+// The Account tab screen — the central hub for the user's account.
+// Signed-in users see their profile header and navigation tiles.
+// Signed-out users see login/register call-to-action buttons.
+// (The auth guard in the router normally redirects unsigned-in users to /login
+// before they can see this screen, but the fallback is kept for safety.)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../models/user_profile.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/profile_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_button.dart';
 
-/// Account home screen.
+/// Account home screen — shown as the Account tab in the bottom nav bar.
 class AccountHomeScreen extends ConsumerWidget {
   const AccountHomeScreen({super.key});
 
@@ -23,36 +26,106 @@ class AccountHomeScreen extends ConsumerWidget {
     // Watch the current user so the screen rebuilds on sign-in/sign-out.
     final user = ref.watch(currentUserProvider);
 
+    // User is not signed in — show the login/register fallback.
     if (user == null) {
-      // Should not normally be visible — auth guard redirects to /login.
-      // Shown as a fallback if the guard hasn't fired yet.
       return _buildSignedOut(context);
     }
 
-    return _buildSignedIn(context, user);
+    // User is signed in — show their profile and navigation tiles.
+    // Also watch the profile provider for real name/phone from the database.
+    final profileAsync = ref.watch(userProfileProvider);
+
+    return _buildSignedIn(context, ref, user, profileAsync);
   }
 
-  /// Full account UI — Phase 4-1 placeholder with working sign-out.
-  Widget _buildSignedIn(BuildContext context, User user) {
-    final displayName =
-        user.userMetadata?['full_name'] as String? ?? user.email ?? 'User';
+  /// Builds the full account screen for a signed-in user.
+  /// [user] is the Supabase Auth user (always available when signed in).
+  /// [profileAsync] is the async result of the profile database fetch.
+  Widget _buildSignedIn(
+    BuildContext context,
+    WidgetRef ref,
+    User user,
+    AsyncValue<UserProfile?> profileAsync,
+  ) {
+    // Determine the display name — prefer profiles table, then auth metadata, then email.
+    // asData?.value is the safe way to extract data from an AsyncValue without
+    // crashing if it's still loading or in an error state.
+    final profile = profileAsync.asData?.value;
+
+    // Cascade through name sources: profiles table → auth metadata → email → fallback.
+    final String displayName;
+    if (profile?.fullName?.isNotEmpty == true) {
+      displayName = profile!.fullName!;
+    } else if ((user.userMetadata?['full_name'] as String?)?.isNotEmpty ==
+        true) {
+      displayName = user.userMetadata!['full_name'] as String;
+    } else {
+      displayName = user.email ?? 'Account';
+    }
+
+    // The first letter of the display name, used in the avatar circle.
+    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'A';
+
+    // Phone number — only show if the profile has one saved.
+    final phone = profile?.phoneNumber;
 
     return Scaffold(
+      backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 40),
+
+              // ── Profile header ────────────────────────────────────────────
+              // Avatar circle showing the user's initial letter.
+              Center(
+                child: CircleAvatar(
+                  radius: 44,
+                  backgroundColor: AppColors.cta,
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
-              Text('Account', style: AppTextStyles.headingBold),
+
+              // Display name
+              Text(
+                displayName,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.headingBold,
+              ),
               const SizedBox(height: 4),
-              Text(displayName, style: AppTextStyles.body),
-              Text(user.email ?? '', style: AppTextStyles.bodyMuted),
+
+              // Email address
+              Text(
+                user.email ?? '',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMuted,
+              ),
+
+              // Phone number — only shown if it's been saved in the profile.
+              if (phone != null && phone.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  phone,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMuted,
+                ),
+              ],
+
               const SizedBox(height: 32),
               const Divider(),
 
-              // Navigation tiles — full UI in Phase 4-1.
+              // ── Navigation tiles ──────────────────────────────────────────
               _NavTile(
                 icon: Icons.receipt_long_outlined,
                 label: 'My Orders',
@@ -68,19 +141,22 @@ class AccountHomeScreen extends ConsumerWidget {
                 label: 'Edit Profile',
                 onTap: () => context.push('/account/profile'),
               ),
-              const Divider(),
-              const SizedBox(height: 16),
 
-              // Sign-out button
+              const Divider(),
+              const SizedBox(height: 24),
+
+              // ── Sign out ──────────────────────────────────────────────────
               AppButton(
                 label: 'Sign Out',
                 variant: AppButtonVariant.secondary,
                 onPressed: () async {
+                  // Sign the user out — the router's _AuthChangeNotifier
+                  // detects the sign-out event and redirects to home automatically.
                   await Supabase.instance.client.auth.signOut();
-                  // Router auto-redirects to home via _AuthChangeNotifier.
                 },
                 fullWidth: true,
               ),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -88,28 +164,52 @@ class AccountHomeScreen extends ConsumerWidget {
     );
   }
 
-  /// Fallback state for unauthenticated users — auth guard should prevent this.
+  /// Fallback screen for users who are not signed in.
+  /// The auth guard in the router normally prevents reaching this, but it
+  /// serves as a safety net and handles the moment before the redirect fires.
   Widget _buildSignedOut(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Icon
+              const Icon(
+                Icons.lock_outline_rounded,
+                size: 64,
+                color: AppColors.textMuted,
+              ),
+              const SizedBox(height: 24),
+
+              // Heading
               Text(
-                'Sign in to view your account',
+                'Sign in to your account',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.headingBold,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+
+              // Subtitle
+              Text(
+                'View your orders, wishlist, and profile.',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMuted,
+              ),
+              const SizedBox(height: 40),
+
+              // Sign in button
               AppButton(
                 label: 'Sign In',
                 onPressed: () => context.push('/login'),
                 fullWidth: true,
               ),
               const SizedBox(height: 12),
+
+              // Register button
               AppButton(
                 label: 'Create Account',
                 variant: AppButtonVariant.secondary,
@@ -124,7 +224,8 @@ class AccountHomeScreen extends ConsumerWidget {
   }
 }
 
-/// A single navigation tile row used in the account screen.
+/// A single navigation row tile used in the account screen.
+/// Shows an icon on the left, a label in the middle, and a right-arrow chevron.
 class _NavTile extends StatelessWidget {
   const _NavTile({
     required this.icon,
@@ -140,7 +241,7 @@ class _NavTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: AppColors.textPrimary),
+      leading: Icon(icon, color: AppColors.cta),
       title: Text(label, style: AppTextStyles.body),
       trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
       onTap: onTap,

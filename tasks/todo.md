@@ -125,8 +125,12 @@
 ## Phase 4 — Account
 **Goal:** Order history, order detail, wishlist, and profile editing all working.
 
-### 4-1 — Account Home Screen
-- [ ] `lib/screens/account/account_home/account_home_screen.dart` — signed-in state (name/email, nav tiles); signed-out state (login/register CTAs)
+### 4-1 — Account Home Screen ✅
+- [x] `lib/screens/account/account_home/account_home_screen.dart` — signed-in state (name/email, nav tiles); signed-out state (login/register CTAs)
+- [x] `lib/models/user_profile.dart` — typed model for profiles table
+- [x] `lib/services/profile_service.dart` — fetchProfile + upsertProfile
+- [x] `lib/providers/profile_provider.dart` — async Riverpod provider
+- [x] Login + register screens: always-visible back button, "Continue as guest" link
 
 ### 4-2 — Order History & Detail
 - [ ] `lib/screens/account/order_history/order_history_screen.dart` — list of past orders (date, total, status badge)

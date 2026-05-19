@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-05-19 — Phase 4-1: Account Home Screen
+
+**What was done:**
+- Created `lib/models/user_profile.dart` — typed model for the `profiles` table (`id`, `full_name`, `phone_number`).
+- Created `lib/services/profile_service.dart` — `fetchProfile()` (maybeSingle, returns null gracefully) and `upsertProfile()` for Phase 4-4.
+- Created `lib/providers/profile_provider.dart` — async `@riverpod` provider that watches `currentUserProvider` and re-fetches on auth state change.
+- Fully implemented `account_home_screen.dart`: avatar circle with brand color + initial letter, display name (cascades: profiles table → auth metadata → email), email, phone (conditional), styled nav tiles with CTA-colored icons, sign-out button.
+- Fixed `checkout_screen.dart` to use `ref.read(userProfileProvider.future)` for profile prefill instead of calling Supabase directly (architecture compliance).
+- Added "Continue as guest" link (CTA color) and always-visible back button to both `login_screen.dart` and `register_screen.dart`.
+
+**Why done this way:**
+- `ProfileService` + `userProfileProvider` are shared with Phase 4-4 (Edit Profile) — creating them now avoids duplication later.
+- Display name cascade ensures something sensible always shows even for users with no profiles row yet.
+- `asData?.value` used instead of `valueOrNull` — the latter is not available in this version of Riverpod.
+- Back button uses `canPop() ? pop() : go('/')` so it works both when pushed from account screen and when the router redirects directly to `/login`.
+
+**Issues encountered:**
+- `AsyncValue<dynamic>` doesn't expose `valueOrNull` — used `asData?.value` as the equivalent.
+- Ternary operator precedence caused a `non_bool_condition` error in the display name fallback chain — refactored to explicit `if/else` blocks.
+- `checkout_screen.dart` was calling Supabase directly in `_prefillFromProfile` — replaced with provider call; kept `supabase_flutter` import since order placement still needs it.
+
+---
+
 ## 2026-05-18 — Session 1: Project Onboarding & Tracking Setup
 
 **What was done:**

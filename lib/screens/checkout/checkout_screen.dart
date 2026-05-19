@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../providers/cart_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../services/order_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -58,19 +59,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _prefillFromProfile() async {
     try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
-      if (userId == null) return;
-      final profile = await Supabase.instance.client
-          .from('profiles')
-          .select('full_name, phone_number')
-          .eq('id', userId)
-          .maybeSingle();
+      // Read the user's profile from the provider — waits for the async fetch.
+      final profile = await ref.read(userProfileProvider.future);
       if (profile != null && mounted) {
-        _nameController.text = profile['full_name'] as String? ?? '';
-        _phoneController.text = profile['phone_number'] as String? ?? '';
+        _nameController.text = profile.fullName ?? '';
+        _phoneController.text = profile.phoneNumber ?? '';
       }
     } catch (_) {
-      // Profile not yet set up — user fills in manually
+      // Profile not available — user fills in the fields manually.
     }
   }
 

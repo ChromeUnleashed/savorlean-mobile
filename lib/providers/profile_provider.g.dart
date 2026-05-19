@@ -1,0 +1,59 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'profile_provider.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Provides the currently signed-in user's profile from the database.
+/// Returns null if the user is not signed in, or if no profile row exists yet.
+/// Automatically re-fetches when the user signs in or out (watches currentUserProvider).
+
+@ProviderFor(userProfile)
+final userProfileProvider = UserProfileProvider._();
+
+/// Provides the currently signed-in user's profile from the database.
+/// Returns null if the user is not signed in, or if no profile row exists yet.
+/// Automatically re-fetches when the user signs in or out (watches currentUserProvider).
+
+final class UserProfileProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UserProfile?>,
+          UserProfile?,
+          FutureOr<UserProfile?>
+        >
+    with $FutureModifier<UserProfile?>, $FutureProvider<UserProfile?> {
+  /// Provides the currently signed-in user's profile from the database.
+  /// Returns null if the user is not signed in, or if no profile row exists yet.
+  /// Automatically re-fetches when the user signs in or out (watches currentUserProvider).
+  UserProfileProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'userProfileProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$userProfileHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<UserProfile?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<UserProfile?> create(Ref ref) {
+    return userProfile(ref);
+  }
+}
+
+String _$userProfileHash() => r'8a7ec66193e13f7bf1282ac14ce2e237c8a78410';

@@ -89,8 +89,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
-        // Only show back button if there is a screen to go back to.
-        automaticallyImplyLeading: context.canPop(),
+        // Always show a back button — pop if there's a previous screen,
+        // otherwise fall back to home so the user is never stuck.
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -245,6 +249,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                   ],
+                ),
+
+                // Continue as guest — lets the user browse without signing in.
+                Center(
+                  child: TextButton(
+                    style: TextButton.styleFrom(foregroundColor: AppColors.cta),
+                    onPressed: () => context.go('/'),
+                    child: Text(
+                      'Continue as guest',
+                      style: AppTextStyles.inter(
+                        fontSize: 13,
+                        color: AppColors.cta,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
