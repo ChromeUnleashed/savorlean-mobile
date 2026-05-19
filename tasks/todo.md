@@ -132,9 +132,12 @@
 - [x] `lib/providers/profile_provider.dart` — async Riverpod provider
 - [x] Login + register screens: always-visible back button, "Continue as guest" link
 
-### 4-2 — Order History & Detail
-- [ ] `lib/screens/account/order_history/order_history_screen.dart` — list of past orders (date, total, status badge)
-- [ ] `lib/screens/account/order_detail/order_detail_screen.dart` — items, address, status, total breakdown
+### 4-2 — Order History & Detail ✅
+- [x] `lib/screens/account/order_history/order_history_screen.dart` — list of past orders (date, total, status badge)
+- [x] `lib/screens/account/order_detail/order_detail_screen.dart` — items, address, status, total breakdown
+- [x] `lib/models/order.dart` + `lib/models/order_item.dart` — typed models
+- [x] `lib/providers/order_provider.dart` — userOrdersProvider + orderDetailProvider(id) family
+- [x] `lib/services/order_service.dart` — fetchOrders() + fetchOrderById() with PostgREST join
 
 ### 4-3 — Wishlist
 - [ ] `lib/providers/wishlist_provider.dart` — wishlist IDs set, toggle logic

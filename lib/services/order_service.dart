@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/cart_item.dart';
+import '../models/order.dart';
 import '../models/placed_order.dart';
 
 class OrderService {
@@ -87,5 +88,45 @@ class OrderService {
       paymentMethod: paymentMethod,
       itemCount: items.fold(0, (sum, i) => sum + i.quantity),
     );
+  }
+
+  /// Fetches all past orders for a given user, newest first.
+  /// Returns a lightweight list (no order_items) suitable for the history screen.
+  Future<List<Order>> fetchOrders(String userId) async {
+    final rows = await _client
+        .from('orders')
+        .select(
+          'id, created_at, subtotal_pkr, delivery_fee_pkr, discount_pkr, '
+          'total_pkr, status, payment_method',
+        )
+        .eq('user_id', userId)
+        .order('created_at', ascending: false);
+
+    // Cast each row to Map<String, dynamic> and parse into Order objects.
+    return (rows as List<dynamic>)
+        .map((row) => Order.fromMap(row as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Fetches a single order by ID with all items and their names joined in.
+  /// The caller must be the order owner — RLS enforces this automatically.
+  Future<Order> fetchOrderById(String orderId) async {
+    final row = await _client
+        .from('orders')
+        .select(
+          // Select all order fields plus nested order_items with meal/plan names.
+          'id, created_at, subtotal_pkr, delivery_fee_pkr, discount_pkr, '
+          'total_pkr, status, payment_method, '
+          'shipping_full_name, shipping_phone_number, '
+          'shipping_street_address, shipping_area_zone, shipping_city, '
+          'shipping_preferred_start_date, shipping_time_window, '
+          'meal_instructions, '
+          'order_items(id, meal_id, plan_id, quantity, unit_price_pkr, line_total_pkr, '
+          'meals(name), subscription_plans(name))',
+        )
+        .eq('id', orderId)
+        .single();
+
+    return Order.fromMap(row);
   }
 }

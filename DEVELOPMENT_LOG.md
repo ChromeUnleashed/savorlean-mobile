@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-05-19 — Phase 4-2: Order History & Detail
+
+**What was done:**
+- Created `lib/models/order_item.dart` — typed model for a line item; extracts name from nested `meals` or `subscription_plans` join result.
+- Created `lib/models/order.dart` — full order model with all shipping fields, price columns, status, and a `List<OrderItem>`; defaults to empty items list for list-view fetches.
+- Added `fetchOrders(userId)` and `fetchOrderById(orderId)` to `OrderService`; the detail query uses PostgREST nested select to join `order_items → meals(name)` and `order_items → subscription_plans(name)`.
+- Created `lib/providers/order_provider.dart` — `userOrdersProvider` (simple list) and `orderDetailProvider(orderId)` (Riverpod family, one instance per order ID).
+- Implemented `order_history_screen.dart`: card-style tiles with short order ID, formatted date, status badge (colored pill), and total; empty state; error + retry.
+- Implemented `order_detail_screen.dart`: status banner with icon + color, items table (Item / QTY / Price columns), price breakdown (subtotal, discount, delivery, total, payment method), delivery details with icons, optional meal instructions section.
+
+**Why done this way:**
+- Two separate fetch methods (lightweight for list, full join for detail) avoids loading item data that the list view doesn't need.
+- `orderDetailProvider` is a Riverpod family so each order ID gets its own cached provider instance, making back-navigation instant.
+- Status colors and labels defined inline (not in theme) — they're display-only and not reused elsewhere.
+- Used `withValues(alpha:)` instead of deprecated `withOpacity()`.
+
+**Issues encountered:**
+- `AppColors.divider` doesn't exist — corrected to `AppColors.border`.
+- Dart 3 disallows duplicate `_` wildcard names in the same scope (`(_, __)`); fixed by using single `_` for both ignored parameters.
+- Unnecessary cast warning on `row as Map<String, dynamic>` — Supabase `.single()` already returns the correct type; removed cast.
+
+---
+
 ## 2026-05-19 — Phase 4-1: Account Home Screen
 
 **What was done:**
