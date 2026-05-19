@@ -155,7 +155,16 @@ class _OurPlansSection extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const SizedBox.shrink(),
+      loading: () => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+        child: Column(
+          children: [
+            const AppPlanCardSkeleton(),
+            const SizedBox(height: 12),
+            const AppPlanCardSkeleton(),
+          ],
+        ),
+      ),
       error: (_, _) => const SizedBox.shrink(),
     );
   }
@@ -209,7 +218,19 @@ class _FeaturedMealsSection extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const SizedBox.shrink(),
+      loading: () => SizedBox(
+        height: 260,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+          itemCount: 3,
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          itemBuilder: (_, _) => const SizedBox(
+            width: 160,
+            child: AppMealCardSkeleton(),
+          ),
+        ),
+      ),
       error: (_, _) => const SizedBox.shrink(),
     );
   }

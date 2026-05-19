@@ -11,6 +11,7 @@ import '../../../models/order.dart';
 import '../../../providers/order_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
+import '../../../widgets/common/loading_indicator.dart';
 
 /// Order history screen — lists all orders for the signed-in user.
 class OrderHistoryScreen extends ConsumerWidget {
@@ -28,8 +29,12 @@ class OrderHistoryScreen extends ConsumerWidget {
         title: const Text('My Orders'),
       ),
       body: ordersAsync.when(
-        // Show a centered spinner while the list is loading.
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          itemCount: 4,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (_, _) => const AppOrderTileSkeleton(),
+        ),
 
         // Show a friendly error message with a retry button on failure.
         error: (_, _) => Center(

@@ -116,6 +116,32 @@ String? _redirect(BuildContext context, GoRouterState state) {
 }
 
 // ---------------------------------------------------------------------------
+// Page transition helper
+// ---------------------------------------------------------------------------
+
+/// Wraps [child] in a fade + subtle upward-slide transition.
+/// Used for all non-tab push navigation so screens feel connected and fluid.
+CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 220),
+    reverseTransitionDuration: const Duration(milliseconds: 180),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.04),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(position: slide, child: child),
+      );
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
 // App router
 // ---------------------------------------------------------------------------
 
@@ -157,20 +183,25 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: 'orders',
-              builder: (context, state) => const OrderHistoryScreen(),
+              pageBuilder: (context, state) =>
+                  _slide(state, const OrderHistoryScreen()),
             ),
             GoRoute(
               path: 'orders/:id',
-              builder: (context, state) =>
-                  OrderDetailScreen(orderId: state.pathParameters['id']!),
+              pageBuilder: (context, state) => _slide(
+                state,
+                OrderDetailScreen(orderId: state.pathParameters['id']!),
+              ),
             ),
             GoRoute(
               path: 'wishlist',
-              builder: (context, state) => const WishlistScreen(),
+              pageBuilder: (context, state) =>
+                  _slide(state, const WishlistScreen()),
             ),
             GoRoute(
               path: 'profile',
-              builder: (context, state) => const EditProfileScreen(),
+              pageBuilder: (context, state) =>
+                  _slide(state, const EditProfileScreen()),
             ),
           ],
         ),
@@ -182,47 +213,61 @@ final appRouter = GoRouter(
     // ------------------------------------------------------------------
     GoRoute(
       path: '/menu/:slug',
-      builder: (context, state) =>
-          MealDetailScreen(slug: state.pathParameters['slug']!),
+      pageBuilder: (context, state) => _slide(
+        state,
+        MealDetailScreen(slug: state.pathParameters['slug']!),
+      ),
     ),
     GoRoute(
       path: '/plans',
-      builder: (context, state) => const PlansScreen(),
+      pageBuilder: (context, state) => _slide(state, const PlansScreen()),
       routes: [
         GoRoute(
           path: ':slug',
-          builder: (context, state) =>
-              PlanDetailScreen(slug: state.pathParameters['slug']!),
+          pageBuilder: (context, state) => _slide(
+            state,
+            PlanDetailScreen(slug: state.pathParameters['slug']!),
+          ),
         ),
       ],
     ),
     GoRoute(
       path: '/checkout',
-      builder: (context, state) => const CheckoutScreen(),
+      pageBuilder: (context, state) =>
+          _slide(state, const CheckoutScreen()),
       routes: [
         GoRoute(
           path: 'confirmation',
-          builder: (context, state) {
+          pageBuilder: (context, state) {
             final order = state.extra as PlacedOrder?;
-            if (order == null) return const _NoOrderScreen();
-            return OrderConfirmationScreen(order: order);
+            return _slide(
+              state,
+              order == null
+                  ? const _NoOrderScreen()
+                  : OrderConfirmationScreen(order: order),
+            );
           },
         ),
       ],
     ),
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-
+    GoRoute(
+      path: '/login',
+      pageBuilder: (context, state) => _slide(state, const LoginScreen()),
+    ),
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterScreen(),
+      pageBuilder: (context, state) =>
+          _slide(state, const RegisterScreen()),
     ),
     GoRoute(
       path: '/forgot-password',
-      builder: (context, state) => const ForgotPasswordScreen(),
+      pageBuilder: (context, state) =>
+          _slide(state, const ForgotPasswordScreen()),
     ),
     GoRoute(
       path: '/reset-password',
-      builder: (context, state) => const ResetPasswordScreen(),
+      pageBuilder: (context, state) =>
+          _slide(state, const ResetPasswordScreen()),
     ),
   ],
 );

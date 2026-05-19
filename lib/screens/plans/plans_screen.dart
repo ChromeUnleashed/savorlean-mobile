@@ -58,7 +58,12 @@ class PlansScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: AppLoadingIndicator()),
+        loading: () => ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: 3,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, _) => const AppPlanCardSkeleton(),
+        ),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dart format *)"
+      "Bash(dart format *)",
+      "Bash(dart analyze *)"
     ]
   }
 }

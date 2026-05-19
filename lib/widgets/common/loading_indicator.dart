@@ -103,3 +103,135 @@ class _AppSkeletonBoxState extends State<AppSkeletonBox>
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Skeleton composite widgets
+// ---------------------------------------------------------------------------
+
+/// Skeleton placeholder matching the MealCard 2-column grid layout.
+/// Drop 6 of these into a SliverGrid / GridView to fill a loading state.
+class AppMealCardSkeleton extends StatelessWidget {
+  const AppMealCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image area — matches MealCard's AspectRatio(4/3)
+          AspectRatio(
+            aspectRatio: 4 / 3,
+            child: LayoutBuilder(
+              builder: (_, c) =>
+                  AppSkeletonBox(height: c.maxHeight, borderRadius: 0),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSkeletonBox(width: 56, height: 10),
+                SizedBox(height: 4),
+                AppSkeletonBox(height: 13),
+                SizedBox(height: 4),
+                AppSkeletonBox(width: 80, height: 13),
+                SizedBox(height: 8),
+                AppSkeletonBox(width: 60, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Skeleton placeholder matching the PlanCard full-width layout.
+class AppPlanCardSkeleton extends StatelessWidget {
+  const AppPlanCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(2),
+        border: const Border(
+          left: BorderSide(color: AppColors.border, width: 4),
+        ),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSkeletonBox(width: 52, height: 20, borderRadius: 2),
+                SizedBox(height: 8),
+                AppSkeletonBox(width: 130, height: 16),
+                SizedBox(height: 6),
+                AppSkeletonBox(height: 12),
+                SizedBox(height: 4),
+                AppSkeletonBox(width: 160, height: 12),
+                SizedBox(height: 10),
+                AppSkeletonBox(width: 80, height: 14),
+              ],
+            ),
+          ),
+          SizedBox(width: 12),
+          AppSkeletonBox(width: 16, height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+/// Skeleton placeholder matching the OrderTile card layout.
+class AppOrderTileSkeleton extends StatelessWidget {
+  const AppOrderTileSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: const Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppSkeletonBox(width: 80, height: 13),
+                SizedBox(height: 6),
+                AppSkeletonBox(width: 120, height: 11),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              AppSkeletonBox(width: 72, height: 22, borderRadius: 20),
+              SizedBox(height: 6),
+              AppSkeletonBox(width: 60, height: 13),
+            ],
+          ),
+          SizedBox(width: 8),
+          AppSkeletonBox(width: 20, height: 20),
+        ],
+      ),
+    );
+  }
+}

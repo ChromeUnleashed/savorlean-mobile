@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -257,6 +258,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 AppButton(
                   label: 'Add to Cart — Rs. ${meal.pricePkr * _quantity}',
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     ref.read(cartProvider.notifier).addMeal(meal, _quantity);
                     final messenger = ScaffoldMessenger.of(context);
                     messenger.clearSnackBars();

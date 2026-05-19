@@ -160,13 +160,13 @@
 ## Phase 5 — Polish & Pre-Release
 **Goal:** App feels complete and ready for store submission.
 
-### 5-1 — UX Polish
-- [ ] Skeleton loaders on all data screens
-- [ ] Error states with "tap to retry" on all data screens
-- [ ] Empty states (no meals, empty cart, empty wishlist, no orders)
-- [ ] All form fields: correct keyboard types, validation, error messages
-- [ ] Haptic feedback on add-to-cart and wishlist toggle
-- [ ] Smooth page transitions via go_router transition config
+### 5-1 — UX Polish ✅
+- [x] Skeleton loaders on all data screens (AppMealCardSkeleton, AppPlanCardSkeleton, AppOrderTileSkeleton)
+- [x] Error states with "tap to retry" on all data screens
+- [x] Empty states (no meals, empty cart, empty wishlist, no orders)
+- [x] All form fields: correct keyboard types, validation, error messages
+- [x] Haptic feedback on add-to-cart and wishlist toggle
+- [x] Smooth page transitions via go_router — fade + subtle upward slide (220ms)
 
 ### 5-2 — App Identity
 - [ ] App icon (1024×1024 PNG) → `flutter_launcher_icons`

@@ -11,6 +11,7 @@ import '../../../providers/meal_provider.dart';
 import '../../../providers/wishlist_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
+import '../../../widgets/common/loading_indicator.dart';
 import '../../../widgets/meal_card/meal_card.dart';
 
 /// Wishlist screen — a grid of meals the user has hearted.
@@ -39,9 +40,18 @@ class WishlistScreen extends ConsumerWidget {
     AsyncValue<Set<String>> wishlistAsync,
     AsyncValue mealsAsync,
   ) {
-    // Show a single spinner while either data source is loading.
     if (wishlistAsync.isLoading || mealsAsync.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return GridView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.72,
+        ),
+        itemCount: 4,
+        itemBuilder: (_, _) => const AppMealCardSkeleton(),
+      );
     }
 
     // Error state — show a message with a retry button.

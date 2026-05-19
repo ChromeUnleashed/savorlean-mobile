@@ -112,8 +112,21 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     ),
                   );
                 },
-                loading: () => const SliverFillRemaining(
-                  child: Center(child: AppLoadingIndicator()),
+                loading: () => SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                  sliver: SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.72,
+                        ),
+                    delegate: SliverChildBuilderDelegate(
+                      (_, _) => const AppMealCardSkeleton(),
+                      childCount: 6,
+                    ),
+                  ),
                 ),
                 error: (e, _) => SliverFillRemaining(
                   child: Center(

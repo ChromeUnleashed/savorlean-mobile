@@ -4,6 +4,7 @@
 // If the user is not signed in, tapping it redirects to the login screen.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,6 +53,7 @@ class WishlistButton extends ConsumerWidget {
       return;
     }
     try {
+      HapticFeedback.lightImpact();
       await ref.read(wishlistProvider.notifier).toggle(mealId);
     } catch (e) {
       // Show the real Supabase error so we can diagnose table/RLS issues.
