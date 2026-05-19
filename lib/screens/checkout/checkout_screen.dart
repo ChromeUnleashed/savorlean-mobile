@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../providers/address_provider.dart';
 import '../../providers/cart_provider.dart';
-import '../../providers/profile_provider.dart';
+import '../../services/address_service.dart';
 import '../../services/order_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -38,6 +39,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String? _timeWindow;
   bool _isPlacing = false;
   String? _error;
+  bool _saveInfo = false;
 
   @override
   void initState() {
@@ -59,15 +61,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _prefillFromProfile() async {
     try {
-      // Read the user's profile from the provider — waits for the async fetch.
-      final profile = await ref.read(userProfileProvider.future);
-      if (profile != null && mounted) {
-        _nameController.text = profile.fullName ?? '';
-        _phoneController.text = profile.phoneNumber ?? '';
+      final address = await ref.read(defaultAddressProvider.future);
+      if (address != null && mounted) {
+        _nameController.text = address.fullName;
+        _phoneController.text = address.phone;
+        _streetController.text = address.streetAddress;
+        _areaController.text = address.area;
+        _cityController.text = address.city;
       }
-    } catch (_) {
-      // Profile not available — user fills in the fields manually.
-    }
+    } catch (_) {}
   }
 
   Future<void> _pickDate() async {
@@ -127,6 +129,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
       ref.read(cartProvider.notifier).clear();
       ref.read(appliedPromoProvider.notifier).clear();
+
+      if (_saveInfo) {
+        try {
+          await AddressService().saveDefaultAddress(
+            userId: user.id,
+            fullName: _nameController.text.trim(),
+            phone: _phoneController.text.trim(),
+            streetAddress: _streetController.text.trim(),
+            area: _areaController.text.trim(),
+            city: _cityController.text.trim(),
+          );
+          ref.invalidate(defaultAddressProvider);
+        } catch (_) {
+          // Non-critical — order is placed, address save failure is silently ignored.
+        }
+      }
 
       if (mounted) {
         context.go('/checkout/confirmation', extra: order);
@@ -197,6 +215,42 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               label: 'City',
               textCapitalization: TextCapitalization.words,
               validator: _required,
+            ),
+            const SizedBox(height: 12),
+            // Save-info checkbox
+            InkWell(
+              onTap: () => setState(() => _saveInfo = !_saveInfo),
+              borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Checkbox(
+                        value: _saveInfo,
+                        onChanged: (v) =>
+                            setState(() => _saveInfo = v ?? false),
+                        activeColor: AppColors.olive,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Save my details for faster checkout next time',
+                        style: AppTextStyles.inter(
+                          fontSize: 13,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 24),
 

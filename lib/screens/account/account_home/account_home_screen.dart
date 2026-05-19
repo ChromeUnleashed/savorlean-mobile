@@ -10,9 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../models/user_profile.dart';
+import '../../../providers/address_provider.dart';
 import '../../../providers/auth_provider.dart';
-import '../../../providers/profile_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_button.dart';
@@ -32,42 +31,32 @@ class AccountHomeScreen extends ConsumerWidget {
     }
 
     // User is signed in — show their profile and navigation tiles.
-    // Also watch the profile provider for real name/phone from the database.
-    final profileAsync = ref.watch(userProfileProvider);
+    final addressAsync = ref.watch(defaultAddressProvider);
 
-    return _buildSignedIn(context, ref, user, profileAsync);
+    return _buildSignedIn(context, ref, user, addressAsync);
   }
 
   /// Builds the full account screen for a signed-in user.
-  /// [user] is the Supabase Auth user (always available when signed in).
-  /// [profileAsync] is the async result of the profile database fetch.
   Widget _buildSignedIn(
     BuildContext context,
     WidgetRef ref,
     User user,
-    AsyncValue<UserProfile?> profileAsync,
+    AsyncValue addressAsync,
   ) {
-    // Determine the display name — prefer profiles table, then auth metadata, then email.
-    // asData?.value is the safe way to extract data from an AsyncValue without
-    // crashing if it's still loading or in an error state.
-    final profile = profileAsync.asData?.value;
+    final address = addressAsync.asData?.value;
 
-    // Cascade through name sources: profiles table → auth metadata → email → fallback.
+    // Cascade: saved address name → Google auth metadata → email fallback.
     final String displayName;
-    if (profile?.fullName?.isNotEmpty == true) {
-      displayName = profile!.fullName!;
-    } else if ((user.userMetadata?['full_name'] as String?)?.isNotEmpty ==
-        true) {
+    if (address?.fullName.isNotEmpty == true) {
+      displayName = address!.fullName;
+    } else if ((user.userMetadata?['full_name'] as String?)?.isNotEmpty == true) {
       displayName = user.userMetadata!['full_name'] as String;
     } else {
       displayName = user.email ?? 'Account';
     }
 
-    // The first letter of the display name, used in the avatar circle.
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'A';
-
-    // Phone number — only show if the profile has one saved.
-    final phone = profile?.phoneNumber;
+    final phone = address?.phone;
 
     return Scaffold(
       backgroundColor: AppColors.bg,

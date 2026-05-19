@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/promo_code.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../services/promo_service.dart';
 import '../../theme/app_colors.dart';
@@ -250,6 +251,59 @@ class _CartContentState extends ConsumerState<_CartContent> {
           ),
         ),
         const SizedBox(height: 20),
+
+        // Guest nudge — only shown when not signed in
+        if (ref.watch(currentUserProvider) == null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.cream,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.bolt_outlined,
+                  size: 20,
+                  color: AppColors.olive,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text.rich(
+                    TextSpan(
+                      style: AppTextStyles.inter(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                      ),
+                      children: [
+                        const TextSpan(
+                          text: 'Sign up to save your address for faster checkouts. ',
+                        ),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.baseline,
+                          baseline: TextBaseline.alphabetic,
+                          child: GestureDetector(
+                            onTap: () => context.push('/register'),
+                            child: Text(
+                              'Create account',
+                              style: AppTextStyles.inter(
+                                fontSize: 13,
+                                color: AppColors.cta,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
 
         AppButton(
           label: 'Proceed to Checkout',

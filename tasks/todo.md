@@ -146,8 +146,8 @@
 - [x] `lib/screens/account/wishlist/wishlist_screen.dart` — grid of MealCards, empty state, error+retry
 - [x] MealCard updated to embed WishlistButton; MealDetailScreen heart wired up
 
-### 4-4 — Edit Profile
-- [ ] `lib/screens/account/edit_profile/edit_profile_screen.dart` — name + phone form, upsert to `profiles`
+### 4-4 — Edit Profile ✅
+- [x] `lib/screens/account/edit_profile/edit_profile_screen.dart` — name + phone + full address form, saves to `addresses` table (default address row); removed unused profiles table dependency
 
 **Phase 4 Sign-Off Checklist:**
 - [ ] Order history shows all past orders

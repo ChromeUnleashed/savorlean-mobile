@@ -42,7 +42,7 @@ final class WishlistProvider
   Wishlist create() => Wishlist();
 }
 
-String _$wishlistHash() => r'7d3538c02e2ca17f9babc373433a8c32068ad016';
+String _$wishlistHash() => r'abe6625d402c3782d7ebacdbdefbe89baa3b12ab';
 
 /// Holds the set of meal IDs the signed-in user has wishlisted.
 /// Returns an empty set when no user is signed in.
