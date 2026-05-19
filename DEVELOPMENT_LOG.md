@@ -4,6 +4,26 @@
 
 ---
 
+## 2026-05-19 — Phase 4-3: Wishlist
+
+**What was done:**
+- Created `WishlistService` — `fetchWishlistIds` (returns `Set<String>`), `addToWishlist`, `removeFromWishlist` against the `wishlists` table.
+- Created `Wishlist` AsyncNotifier (`wishlist_provider.dart`) — loads IDs on build, `toggle()` does optimistic update then syncs to DB; reverts and rethrows on error.
+- Created `WishlistButton` widget — self-contained `ConsumerWidget` taking a `mealId`; redirects to `/login` if not signed in, otherwise calls `toggle()` and shows a snackbar on error.
+- Updated `MealCard` to embed `WishlistButton` directly; removed the now-unused `isWishlisted`/`onWishlistTap` props.
+- Wired the heart button in `MealDetailScreen` SliverAppBar actions — fills/unfills based on wishlist state, same auth + error handling.
+- Implemented `WishlistScreen` — watches both `wishlistProvider` and `mealsProvider`, filters to intersection, grid layout matching menu, empty state with "Browse Menu" link.
+
+**Why done this way:**
+- `WishlistButton` is self-contained so no screen needs to pass wishlist state down — just drop `WishlistButton(mealId: meal.id)` anywhere.
+- Optimistic update + revert pattern keeps the UI snappy while guaranteeing eventual consistency with the DB.
+- `rethrow` after revert lets the button surface the actual error to the user instead of silently failing.
+
+**Issues encountered:**
+- Table is named `wishlists` (plural) — initial implementation used `wishlist` (singular). Diagnosed by surfacing the Supabase error in a snackbar; fixed by updating all three queries in `WishlistService`.
+
+---
+
 ## 2026-05-19 — Phase 4-2: Order History & Detail
 
 **What was done:**

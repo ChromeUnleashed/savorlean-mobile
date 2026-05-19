@@ -139,11 +139,12 @@
 - [x] `lib/providers/order_provider.dart` — userOrdersProvider + orderDetailProvider(id) family
 - [x] `lib/services/order_service.dart` — fetchOrders() + fetchOrderById() with PostgREST join
 
-### 4-3 — Wishlist
-- [ ] `lib/providers/wishlist_provider.dart` — wishlist IDs set, toggle logic
-- [ ] `lib/services/wishlist_service.dart` — fetch, toggle (insert/delete)
-- [ ] `lib/widgets/wishlist_button/wishlist_button.dart`
-- [ ] `lib/screens/account/wishlist/wishlist_screen.dart` — grid of MealCards, X remove, empty state
+### 4-3 — Wishlist ✅
+- [x] `lib/providers/wishlist_provider.dart` — AsyncNotifier with optimistic toggle
+- [x] `lib/services/wishlist_service.dart` — fetchWishlistIds, addToWishlist, removeFromWishlist
+- [x] `lib/widgets/wishlist_button/wishlist_button.dart` — self-contained heart button
+- [x] `lib/screens/account/wishlist/wishlist_screen.dart` — grid of MealCards, empty state, error+retry
+- [x] MealCard updated to embed WishlistButton; MealDetailScreen heart wired up
 
 ### 4-4 — Edit Profile
 - [ ] `lib/screens/account/edit_profile/edit_profile_screen.dart` — name + phone form, upsert to `profiles`

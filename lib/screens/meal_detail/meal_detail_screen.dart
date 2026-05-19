@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../models/meal.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/meal_provider.dart';
+import '../../providers/wishlist_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_button.dart';
@@ -87,9 +89,33 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
             onTap: () => Navigator.of(context).pop(),
           ),
           actions: [
-            _CircleButton(
-              icon: Icons.favorite_border,
-              onTap: () {}, // wired up in Phase 4-3
+            // Wishlist heart — filled when the meal is saved, outlined when not.
+            Builder(
+              builder: (context) {
+                final wishlistIds =
+                    ref.watch(wishlistProvider).asData?.value ?? {};
+                final isWishlisted = wishlistIds.contains(meal.id);
+                return _CircleButton(
+                  icon: isWishlisted ? Icons.favorite : Icons.favorite_border,
+                  color: isWishlisted ? AppColors.cta : AppColors.textPrimary,
+                  onTap: () async {
+                    final user = ref.read(currentUserProvider);
+                    if (user == null) {
+                      context.push('/login');
+                      return;
+                    }
+                    try {
+                      await ref.read(wishlistProvider.notifier).toggle(meal.id);
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Wishlist error: $e')),
+                        );
+                      }
+                    }
+                  },
+                );
+              },
             ),
             const SizedBox(width: 8),
           ],
@@ -243,10 +269,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                         ),
                       ),
                     );
-                    Future.delayed(
-                      const Duration(seconds: 3),
-                      entry.close,
-                    );
+                    Future.delayed(const Duration(seconds: 3), entry.close);
                   },
                   variant: AppButtonVariant.ctaLight,
                   fullWidth: true,
@@ -263,8 +286,9 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
 class _CircleButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final Color? color;
 
-  const _CircleButton({required this.icon, required this.onTap});
+  const _CircleButton({required this.icon, required this.onTap, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -278,7 +302,7 @@ class _CircleButton extends StatelessWidget {
           color: Colors.white.withValues(alpha: 0.9),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 20, color: AppColors.textPrimary),
+        child: Icon(icon, size: 20, color: color ?? AppColors.textPrimary),
       ),
     );
   }
