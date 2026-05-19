@@ -98,28 +98,27 @@
 - [x] Cart badge on bottom nav updates live from provider
 - [x] "Proceed to Checkout" auth guard
 
-### 3-2 — Promo Code Validation
-- [ ] `lib/models/promo_code.dart`
-- [ ] `lib/services/promo_service.dart` — validate code (active, not expired, within usage limit)
-- [ ] Apply discount; show inline error if invalid
+### 3-2 — Promo Code Validation ✅
+- [x] `lib/models/promo_code.dart`
+- [x] `lib/services/promo_service.dart` — validate code (active, not expired, within usage limit)
+- [x] Apply discount; show inline error if invalid
 
-### 3-3 — Checkout & Order Placement
-- [ ] `lib/models/order.dart`
-- [ ] `lib/models/order_item.dart`
-- [ ] `lib/services/order_service.dart` — insert `orders` + `order_items`
-- [ ] `lib/screens/checkout/checkout_screen.dart` — delivery details, COD label, order summary, meal instructions field, place order button
-- [ ] Pre-fill name/phone from user profile
-- [ ] On success → clear cart → navigate to confirmation
-- [ ] `lib/screens/order_confirmation/order_confirmation_screen.dart`
+### 3-3 — Checkout & Order Placement ✅
+- [x] `lib/services/order_service.dart` — insert `orders` + `order_items`
+- [x] `lib/screens/checkout/checkout_screen.dart` — delivery details, COD label, order summary, meal instructions field, place order button
+- [x] Pre-fill name/phone from user profile
+- [x] On success → clear cart → navigate to confirmation
+- [x] `lib/screens/order_confirmation/order_confirmation_screen.dart` — with bank transfer details from site_settings
+- [x] Order confirmation email via Supabase Edge Function + Resend
 
 **Phase 3 Sign-Off Checklist:**
-- [ ] Can add meal + plan to cart
-- [ ] Quantities update correctly; remove works
-- [ ] Valid promo code applies discount; invalid shows error
-- [ ] Can complete checkout with real user → order appears in Supabase `orders` table
-- [ ] Order confirmation screen shows correct order details
-- [ ] Order confirmation email arrives (verify in Resend dashboard)
-- [ ] Cart clears after successful order
+- [x] Can add meal + plan to cart
+- [x] Quantities update correctly; remove works
+- [x] Valid promo code applies discount; invalid shows error
+- [x] Can complete checkout with real user → order appears in Supabase `orders` table
+- [x] Order confirmation screen shows correct order details
+- [x] Order confirmation email arrives (verified in Resend)
+- [x] Cart clears after successful order
 
 ---
 

@@ -70,6 +70,17 @@ class OrderService {
 
     await _client.from('order_items').insert(orderItems);
 
+    // Fire-and-forget: send confirmation email via Edge Function.
+    // Wrapped in try/catch so an email failure never blocks the order confirmation.
+    try {
+      await _client.functions.invoke(
+        'send-order-confirmation',
+        body: {'order_id': orderId},
+      );
+    } catch (_) {
+      // Email failure is non-fatal — order is already placed.
+    }
+
     return PlacedOrder(
       id: orderId,
       totalPkr: totalPkr,

@@ -28,6 +28,23 @@ class SettingsService {
     return (data as List).map((json) => Testimonial.fromJson(json)).toList();
   }
 
+  /// Fetches all key-value pairs from the site_settings table.
+  /// Returns an empty map if the table is missing or inaccessible.
+  Future<Map<String, String>> fetchSiteSettings() async {
+    try {
+      final data = await _client.from('site_settings').select();
+      final map = <String, String>{};
+      for (final row in (data as List)) {
+        final key = row['key'] as String?;
+        final value = row['value'] as String?;
+        if (key != null && value != null) map[key] = value;
+      }
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
   /// Fetches the announcement bar text from the site_content table.
   /// Returns null if the announcement is not set or disabled.
   Future<String?> fetchAnnouncement() async {

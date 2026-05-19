@@ -223,4 +223,45 @@
 
 **User confirmed. 3-1 marked complete.**
 
+## 2026-05-19 — Phase 3-2: Promo Code Validation
+
+**What was done:**
+- Created `lib/models/promo_code.dart` — `PromoCode` with `discountFor(int subtotalPkr)` computing fixed or percentage discounts (capped by `maxDiscountPkr`), and a `displayLabel` getter for UI display.
+- Created `lib/services/promo_service.dart` — `validate(String code)` fetches from `promo_codes` table, validates `is_active`, date range, and usage limit, throws typed `PromoException` with user-facing messages.
+- Extended `cart_provider.dart` — added `AppliedPromo` notifier (`PromoCode?` state, `apply`/`clear`), `promoServiceProvider`, `cartDiscountProvider`, and `cartTotalProvider`.
+- Updated `cart_screen.dart` — promo field now active: shows `TextField` + Apply button when no promo applied, switches to `_AppliedPromoChip` (olive background, code + displayLabel, Remove button) when applied. Inline error shown below field on failure.
+
+**Issues encountered:**
+- `PostgrestException code: 42501` — `permission denied for table promo_codes`. Root cause: Supabase requires both a table-level GRANT and an RLS policy. RLS policy alone is not sufficient. Fixed by running `GRANT SELECT ON public.promo_codes TO anon, authenticated` in the SQL Editor.
+- `discount_value` column is PostgreSQL `numeric` type — PostgREST returns it as a String, not `num`. Fixed with `double.parse(json['discount_value'].toString())` in `PromoCode.fromJson`.
+
+**User confirmed. 3-2 marked complete.**
+
+---
+
+## 2026-05-19 — Phase 3-3: Checkout & Order Placement
+
+**What was done:**
+- Created `lib/models/placed_order.dart` — lightweight model (id, totalPkr, paymentMethod, itemCount) passed via go_router `extra` to the confirmation screen.
+- Created `lib/services/order_service.dart` — `placeOrder()` inserts into `orders` then `order_items`, includes `plan_config` JSONB for plan items. After both inserts succeed, invokes the `send-order-confirmation` Edge Function (fire-and-forget, email failure never blocks order confirmation).
+- Implemented `lib/screens/checkout/checkout_screen.dart` — delivery details form (5 required fields), optional schedule section (date picker + `DropdownMenu` time window), optional meal instructions, `RadioGroup<String>` payment method (COD / Bank Transfer), order summary box, Place Order button. Profile pre-fill attempts `profiles` table on init (silent failure).
+- Implemented `lib/screens/order_confirmation/order_confirmation_screen.dart` — order summary box, bank transfer instructions box (shown only for bank_transfer, fetches `site_settings` for bank name, account title, account number, IBAN, WhatsApp number), Continue Shopping + View Order History buttons.
+- Updated `router.dart` — confirmation route reads `state.extra as PlacedOrder?`, renders `_NoOrderScreen` fallback if navigated to directly.
+- Deployed Supabase Edge Function `send-order-confirmation` — fetches order + items using service role key, looks up meal/plan names by ID, sends branded HTML email via Resend API matching the website's olive header design.
+
+**Issues encountered:**
+- Flutter 3.41 deprecated `DropdownButtonFormField(value:)` → replaced with `DropdownMenu(initialSelection:, expandedInsets: EdgeInsets.zero)`.
+- Flutter 3.41 deprecated `RadioListTile(groupValue:, onChanged:)` → replaced with `RadioGroup<String>` wrapping `RadioListTile` widgets.
+- Snackbar with action doesn't auto-dismiss via `duration` in Flutter 3.41 — fixed by capturing `ScaffoldFeatureController` from `showSnackBar` and calling `Future.delayed(Duration(seconds: 3), entry.close)`.
+- Edge Function initially queried meals by `slug` but `order_items.meal_id` stores `meal.id` (not slug) — fixed by querying `in('id', mealIds)`.
+
+**Design decisions:**
+- All CTA buttons updated to `#B5766D` (lighter rose) by changing `AppColors.cta`.
+- Snackbar theme updated to olive green (`AppColors.olive` background, `AppColors.oliveSoft` action text).
+- Bank transfer details (bank name, account title, account number, IBAN, WhatsApp) read from `site_settings` table — never hardcoded per AGENTS.md rule 13.
+
+**User confirmed. 3-3 marked complete. Phase 3 fully signed off.**
+
+---
+
 <!-- New entries go below this line, newest at the bottom -->
