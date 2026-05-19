@@ -168,10 +168,10 @@
 - [x] Haptic feedback on add-to-cart and wishlist toggle
 - [x] Smooth page transitions via go_router — fade + subtle upward slide (220ms)
 
-### 5-2 — App Identity
-- [ ] App icon (1024×1024 PNG) → `flutter_launcher_icons`
-- [ ] Splash screen (SavorLean logo on white) → `flutter_native_splash`
-- [ ] App name "SavorLean" in Android manifest + iOS Info.plist
+### 5-2 — App Identity ✅
+- [x] App icon (1024×1024 PNG) → `flutter_launcher_icons`
+- [x] Splash screen (SavorLean logo on white) → `flutter_native_splash`; preserved until Supabase init completes
+- [x] App name "SavorLean" in Android manifest + iOS Info.plist
 
 ### 5-3 — Deep Links & URL Scheme
 - [ ] Android `intent-filter` + iOS `Associated Domains` for Supabase auth callbacks

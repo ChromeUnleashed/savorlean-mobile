@@ -6,6 +6,7 @@
 // Run with: flutter run --dart-define-from-file=dart_defines.json
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'router/router.dart';
@@ -17,12 +18,10 @@ const _supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 const _supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
 Future<void> main() async {
-  // Must be called before any async platform code (Supabase, Firebase, etc.).
-  WidgetsFlutterBinding.ensureInitialized();
+  // Preserve the native splash screen until we finish initialising Supabase.
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: binding);
 
-  // Initialise the Supabase client once. After this call it is accessible
-  // anywhere in the app via Supabase.instance.client.
-  // PKCE auth flow is required for secure OAuth and deep-link callbacks on mobile.
   await Supabase.initialize(
     url: _supabaseUrl,
     anonKey: _supabaseAnonKey,
@@ -31,8 +30,9 @@ Future<void> main() async {
     ),
   );
 
-  // ProviderScope is the root container required by Riverpod.
-  // All providers declared with @riverpod live inside this scope.
+  // Remove the splash — Flutter will now render the first app frame.
+  FlutterNativeSplash.remove();
+
   runApp(const ProviderScope(child: SavorLeanApp()));
 }
 
