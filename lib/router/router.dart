@@ -34,6 +34,7 @@ import '../screens/account/wishlist/wishlist_screen.dart';
 import '../screens/auth/forgot_password/forgot_password_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
+import '../screens/auth/reset_password/reset_password_screen.dart';
 import '../models/placed_order.dart';
 import '../screens/cart/cart_screen.dart';
 import '../screens/checkout/checkout_screen.dart';
@@ -56,9 +57,16 @@ bool _isSignedIn() => Supabase.instance.client.auth.currentSession != null;
 /// go_router uses this as a refreshListenable to re-run the redirect
 /// function automatically on sign-in or sign-out.
 class _AuthChangeNotifier extends ChangeNotifier {
+  AuthChangeEvent? lastEvent;
+
   _AuthChangeNotifier() {
-    // Listen to every auth state change and notify go_router to re-evaluate.
-    Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      // Track the latest event so the redirect function can react to it.
+      // Clear lastEvent after a password update so we stop redirecting to
+      // /reset-password once the user has finished.
+      lastEvent = data.event == AuthChangeEvent.userUpdated
+          ? null
+          : data.event;
       notifyListeners();
     });
   }
@@ -76,6 +84,13 @@ final _authNotifier = _AuthChangeNotifier();
 String? _redirect(BuildContext context, GoRouterState state) {
   final signedIn = _isSignedIn();
   final loc = state.matchedLocation;
+
+  // After a password-reset deep link opens the app, Supabase fires a
+  // passwordRecovery event. Send the user straight to the reset screen.
+  if (_authNotifier.lastEvent == AuthChangeEvent.passwordRecovery) {
+    if (loc != '/reset-password') return '/reset-password';
+    return null;
+  }
 
   // Send unsigned-in users away from protected routes to the login screen.
   // The redirect_to query param is read by LoginScreen after a successful login.
@@ -204,6 +219,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/forgot-password',
       builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) => const ResetPasswordScreen(),
     ),
   ],
 );

@@ -43,7 +43,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       await Supabase.instance.client.auth.resetPasswordForEmail(
         _emailController.text.trim(),
         // The app will receive this deep link and Supabase handles the token.
-        redirectTo: 'savorlean://reset-callback/',
+        redirectTo: 'https://savorlean.netlify.app/reset-password',
       );
       if (mounted) setState(() => _emailSent = true);
     } on AuthException catch (e) {
