@@ -173,8 +173,11 @@
 - [x] Splash screen (SavorLean logo on white) → `flutter_native_splash`; preserved until Supabase init completes
 - [x] App name "SavorLean" in Android manifest + iOS Info.plist
 
-### 5-3 — Deep Links & URL Scheme
-- [ ] Android `intent-filter` + iOS `Associated Domains` for Supabase auth callbacks
+### 5-3 — Deep Links & URL Scheme ✅
+- [x] Android `intent-filter` in `AndroidManifest.xml` for `savorlean://login-callback` + `savorlean://reset-callback`
+- [x] iOS `CFBundleURLTypes` in `Info.plist` registers the `savorlean` URL scheme
+- [x] `resetPasswordForEmail` `redirectTo` set to `savorlean://login-callback`
+- [ ] Supabase dashboard: add `savorlean://login-callback` to Redirect URLs (manual — user action)
 - [ ] Test: password reset email → tap link → app opens on reset screen
 
 ### 5-4 — Performance
