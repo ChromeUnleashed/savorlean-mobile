@@ -180,10 +180,10 @@
 - [ ] Supabase dashboard: add `savorlean://login-callback` to Redirect URLs (manual — user action)
 - [ ] Test: password reset email → tap link → app opens on reset screen
 
-### 5-4 — Performance
-- [ ] `cached_network_image` on all meal/plan images (verify, not just added as dep)
-- [ ] Pagination or "load more" on menu screen if meal count > 50
-- [ ] Review Riverpod provider scopes for unnecessary rebuilds
+### 5-4 — Performance ✅
+- [x] `cached_network_image` on all meal/plan images (verify, not just added as dep)
+- [x] Pagination or "load more" on menu screen if meal count > 50
+- [x] Review Riverpod provider scopes for unnecessary rebuilds
 
 **Phase 5 Sign-Off Checklist:**
 - [ ] App looks polished on a real device (no layout overflow, no jank)

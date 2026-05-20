@@ -28,13 +28,15 @@ class MealService {
           .select(_mealSelect)
           .eq('is_available', true)
           .eq('category_id', categoryId)
-          .order('name');
+          .order('name')
+          .limit(100);
     } else {
       data = await _client
           .from('meals')
           .select(_mealSelect)
           .eq('is_available', true)
-          .order('name');
+          .order('name')
+          .limit(100);
     }
     return data.map((e) => Meal.fromJson(e)).toList();
   }

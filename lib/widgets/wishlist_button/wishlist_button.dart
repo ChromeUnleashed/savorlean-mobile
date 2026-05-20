@@ -24,9 +24,11 @@ class WishlistButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the wishlist set — rebuilds when the user toggles any meal.
-    final wishlistIds = ref.watch(wishlistProvider).asData?.value ?? {};
-    final isWishlisted = wishlistIds.contains(mealId);
+    // Select only this meal's status — rebuilds only when THIS meal is toggled,
+    // not when any other meal in the wishlist changes.
+    final isWishlisted = ref.watch(
+      wishlistProvider.select((v) => v.asData?.value.contains(mealId) ?? false),
+    );
 
     return GestureDetector(
       onTap: () => _handleTap(context, ref),

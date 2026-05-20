@@ -4,72 +4,6 @@
 
 ---
 
-## 2026-05-19 — Phase 4-3: Wishlist
-
-**What was done:**
-- Created `WishlistService` — `fetchWishlistIds` (returns `Set<String>`), `addToWishlist`, `removeFromWishlist` against the `wishlists` table.
-- Created `Wishlist` AsyncNotifier (`wishlist_provider.dart`) — loads IDs on build, `toggle()` does optimistic update then syncs to DB; reverts and rethrows on error.
-- Created `WishlistButton` widget — self-contained `ConsumerWidget` taking a `mealId`; redirects to `/login` if not signed in, otherwise calls `toggle()` and shows a snackbar on error.
-- Updated `MealCard` to embed `WishlistButton` directly; removed the now-unused `isWishlisted`/`onWishlistTap` props.
-- Wired the heart button in `MealDetailScreen` SliverAppBar actions — fills/unfills based on wishlist state, same auth + error handling.
-- Implemented `WishlistScreen` — watches both `wishlistProvider` and `mealsProvider`, filters to intersection, grid layout matching menu, empty state with "Browse Menu" link.
-
-**Why done this way:**
-- `WishlistButton` is self-contained so no screen needs to pass wishlist state down — just drop `WishlistButton(mealId: meal.id)` anywhere.
-- Optimistic update + revert pattern keeps the UI snappy while guaranteeing eventual consistency with the DB.
-- `rethrow` after revert lets the button surface the actual error to the user instead of silently failing.
-
-**Issues encountered:**
-- Table is named `wishlists` (plural) — initial implementation used `wishlist` (singular). Diagnosed by surfacing the Supabase error in a snackbar; fixed by updating all three queries in `WishlistService`.
-
----
-
-## 2026-05-19 — Phase 4-2: Order History & Detail
-
-**What was done:**
-- Created `lib/models/order_item.dart` — typed model for a line item; extracts name from nested `meals` or `subscription_plans` join result.
-- Created `lib/models/order.dart` — full order model with all shipping fields, price columns, status, and a `List<OrderItem>`; defaults to empty items list for list-view fetches.
-- Added `fetchOrders(userId)` and `fetchOrderById(orderId)` to `OrderService`; the detail query uses PostgREST nested select to join `order_items → meals(name)` and `order_items → subscription_plans(name)`.
-- Created `lib/providers/order_provider.dart` — `userOrdersProvider` (simple list) and `orderDetailProvider(orderId)` (Riverpod family, one instance per order ID).
-- Implemented `order_history_screen.dart`: card-style tiles with short order ID, formatted date, status badge (colored pill), and total; empty state; error + retry.
-- Implemented `order_detail_screen.dart`: status banner with icon + color, items table (Item / QTY / Price columns), price breakdown (subtotal, discount, delivery, total, payment method), delivery details with icons, optional meal instructions section.
-
-**Why done this way:**
-- Two separate fetch methods (lightweight for list, full join for detail) avoids loading item data that the list view doesn't need.
-- `orderDetailProvider` is a Riverpod family so each order ID gets its own cached provider instance, making back-navigation instant.
-- Status colors and labels defined inline (not in theme) — they're display-only and not reused elsewhere.
-- Used `withValues(alpha:)` instead of deprecated `withOpacity()`.
-
-**Issues encountered:**
-- `AppColors.divider` doesn't exist — corrected to `AppColors.border`.
-- Dart 3 disallows duplicate `_` wildcard names in the same scope (`(_, __)`); fixed by using single `_` for both ignored parameters.
-- Unnecessary cast warning on `row as Map<String, dynamic>` — Supabase `.single()` already returns the correct type; removed cast.
-
----
-
-## 2026-05-19 — Phase 4-1: Account Home Screen
-
-**What was done:**
-- Created `lib/models/user_profile.dart` — typed model for the `profiles` table (`id`, `full_name`, `phone_number`).
-- Created `lib/services/profile_service.dart` — `fetchProfile()` (maybeSingle, returns null gracefully) and `upsertProfile()` for Phase 4-4.
-- Created `lib/providers/profile_provider.dart` — async `@riverpod` provider that watches `currentUserProvider` and re-fetches on auth state change.
-- Fully implemented `account_home_screen.dart`: avatar circle with brand color + initial letter, display name (cascades: profiles table → auth metadata → email), email, phone (conditional), styled nav tiles with CTA-colored icons, sign-out button.
-- Fixed `checkout_screen.dart` to use `ref.read(userProfileProvider.future)` for profile prefill instead of calling Supabase directly (architecture compliance).
-- Added "Continue as guest" link (CTA color) and always-visible back button to both `login_screen.dart` and `register_screen.dart`.
-
-**Why done this way:**
-- `ProfileService` + `userProfileProvider` are shared with Phase 4-4 (Edit Profile) — creating them now avoids duplication later.
-- Display name cascade ensures something sensible always shows even for users with no profiles row yet.
-- `asData?.value` used instead of `valueOrNull` — the latter is not available in this version of Riverpod.
-- Back button uses `canPop() ? pop() : go('/')` so it works both when pushed from account screen and when the router redirects directly to `/login`.
-
-**Issues encountered:**
-- `AsyncValue<dynamic>` doesn't expose `valueOrNull` — used `asData?.value` as the equivalent.
-- Ternary operator precedence caused a `non_bool_condition` error in the display name fallback chain — refactored to explicit `if/else` blocks.
-- `checkout_screen.dart` was calling Supabase directly in `_prefillFromProfile` — replaced with provider call; kept `supabase_flutter` import since order placement still needs it.
-
----
-
 ## 2026-05-18 — Session 1: Project Onboarding & Tracking Setup
 
 **What was done:**
@@ -90,8 +24,6 @@
 
 **Issues / blockers:**
 - None yet. Awaiting user approval to begin Phase 1.
-
----
 
 ---
 
@@ -157,6 +89,8 @@
 
 **User confirmed. 1-3 marked complete.**
 
+---
+
 ## 2026-05-18 — Phase 1-4: Auth Screens & Flow
 
 **What was done:**
@@ -175,6 +109,8 @@
 - iOS deep link scheme (`savorlean://`) has not been added to `Info.plist` yet, which is expected since iOS Associated Domains is scheduled for Phase 5-3, but something to note if testing on iOS.
 
 **User confirmed. 1-4 marked complete.**
+
+---
 
 ## 2026-05-18 — Phase 2-1: Home Screen
 
@@ -199,6 +135,8 @@
 - None after schema corrections.
 
 **User confirmed. 2-1 marked complete.**
+
+---
 
 ## 2026-05-18 — Phase 2-2: Menu Screen
 
@@ -227,6 +165,8 @@
 
 **User confirmed. 2-2 marked complete.**
 
+---
+
 ## 2026-05-18 — Phase 2-3: Meal Detail Screen
 
 **What was done:**
@@ -245,6 +185,8 @@
 - None. Zero analyzer issues.
 
 **User confirmed. 2-3 marked complete.**
+
+---
 
 ## 2026-05-19 — Phase 2-4: Plans Screens
 
@@ -267,6 +209,8 @@
 
 **User confirmed. 2-4 marked complete.**
 
+---
+
 ## 2026-05-19 — Phase 3-1: Cart
 
 **What was done:**
@@ -288,6 +232,8 @@
 - None. Zero analyzer issues, dart format clean.
 
 **User confirmed. 3-1 marked complete.**
+
+---
 
 ## 2026-05-19 — Phase 3-2: Promo Code Validation
 
@@ -330,4 +276,179 @@
 
 ---
 
-<!-- New entries go below this line, newest at the bottom -->
+## 2026-05-19 — Phase 4-1: Account Home Screen
+
+**What was done:**
+- Created `lib/models/user_profile.dart` — typed model for the `profiles` table (`id`, `full_name`, `phone_number`).
+- Created `lib/services/profile_service.dart` — `fetchProfile()` (maybeSingle, returns null gracefully) and `upsertProfile()` for Phase 4-4.
+- Created `lib/providers/profile_provider.dart` — async `@riverpod` provider that watches `currentUserProvider` and re-fetches on auth state change.
+- Fully implemented `account_home_screen.dart`: avatar circle with brand color + initial letter, display name (cascades: profiles table → auth metadata → email), email, phone (conditional), styled nav tiles with CTA-colored icons, sign-out button.
+- Fixed `checkout_screen.dart` to use `ref.read(userProfileProvider.future)` for profile prefill instead of calling Supabase directly (architecture compliance).
+- Added "Continue as guest" link (CTA color) and always-visible back button to both `login_screen.dart` and `register_screen.dart`.
+
+**Why done this way:**
+- `ProfileService` + `userProfileProvider` are shared with Phase 4-4 (Edit Profile) — creating them now avoids duplication later.
+- Display name cascade ensures something sensible always shows even for users with no profiles row yet.
+- `asData?.value` used instead of `valueOrNull` — the latter is not available in this version of Riverpod.
+- Back button uses `canPop() ? pop() : go('/')` so it works both when pushed from account screen and when the router redirects directly to `/login`.
+
+**Issues encountered:**
+- `AsyncValue<dynamic>` doesn't expose `valueOrNull` — used `asData?.value` as the equivalent.
+- Ternary operator precedence caused a `non_bool_condition` error in the display name fallback chain — refactored to explicit `if/else` blocks.
+- `checkout_screen.dart` was calling Supabase directly in `_prefillFromProfile` — replaced with provider call; kept `supabase_flutter` import since order placement still needs it.
+
+---
+
+## 2026-05-19 — Phase 4-2: Order History & Detail
+
+**What was done:**
+- Created `lib/models/order_item.dart` — typed model for a line item; extracts name from nested `meals` or `subscription_plans` join result.
+- Created `lib/models/order.dart` — full order model with all shipping fields, price columns, status, and a `List<OrderItem>`; defaults to empty items list for list-view fetches.
+- Added `fetchOrders(userId)` and `fetchOrderById(orderId)` to `OrderService`; the detail query uses PostgREST nested select to join `order_items → meals(name)` and `order_items → subscription_plans(name)`.
+- Created `lib/providers/order_provider.dart` — `userOrdersProvider` (simple list) and `orderDetailProvider(orderId)` (Riverpod family, one instance per order ID).
+- Implemented `order_history_screen.dart`: card-style tiles with short order ID, formatted date, status badge (colored pill), and total; empty state; error + retry.
+- Implemented `order_detail_screen.dart`: status banner with icon + color, items table (Item / QTY / Price columns), price breakdown (subtotal, discount, delivery, total, payment method), delivery details with icons, optional meal instructions section.
+
+**Why done this way:**
+- Two separate fetch methods (lightweight for list, full join for detail) avoids loading item data that the list view doesn't need.
+- `orderDetailProvider` is a Riverpod family so each order ID gets its own cached provider instance, making back-navigation instant.
+- Status colors and labels defined inline (not in theme) — they're display-only and not reused elsewhere.
+- Used `withValues(alpha:)` instead of deprecated `withOpacity()`.
+
+**Issues encountered:**
+- `AppColors.divider` doesn't exist — corrected to `AppColors.border`.
+- Dart 3 disallows duplicate `_` wildcard names in the same scope (`(_, __)`); fixed by using single `_` for both ignored parameters.
+- Unnecessary cast warning on `row as Map<String, dynamic>` — Supabase `.single()` already returns the correct type; removed cast.
+
+---
+
+## 2026-05-19 — Phase 4-3: Wishlist
+
+**What was done:**
+- Created `WishlistService` — `fetchWishlistIds` (returns `Set<String>`), `addToWishlist`, `removeFromWishlist` against the `wishlists` table.
+- Created `Wishlist` AsyncNotifier (`wishlist_provider.dart`) — loads IDs on build, `toggle()` does optimistic update then syncs to DB; reverts and rethrows on error.
+- Created `WishlistButton` widget — self-contained `ConsumerWidget` taking a `mealId`; redirects to `/login` if not signed in, otherwise calls `toggle()` and shows a snackbar on error.
+- Updated `MealCard` to embed `WishlistButton` directly; removed the now-unused `isWishlisted`/`onWishlistTap` props.
+- Wired the heart button in `MealDetailScreen` SliverAppBar actions — fills/unfills based on wishlist state, same auth + error handling.
+- Implemented `WishlistScreen` — watches both `wishlistProvider` and `mealsProvider`, filters to intersection, grid layout matching menu, empty state with "Browse Menu" link.
+
+**Why done this way:**
+- `WishlistButton` is self-contained so no screen needs to pass wishlist state down — just drop `WishlistButton(mealId: meal.id)` anywhere.
+- Optimistic update + revert pattern keeps the UI snappy while guaranteeing eventual consistency with the DB.
+- `rethrow` after revert lets the button surface the actual error to the user instead of silently failing.
+
+**Issues encountered:**
+- Table is named `wishlists` (plural) — initial implementation used `wishlist` (singular). Diagnosed by surfacing the Supabase error in a snackbar; fixed by updating all three queries in `WishlistService`.
+
+---
+
+## 2026-05-19 — Phase 4-4: Edit Profile
+
+**What was done:**
+- Created `lib/models/address.dart` — typed model for the `addresses` table with fields: `id`, `userId`, `fullName`, `phone`, `streetAddress`, `area`, `city`, `isDefault`, `createdAt`. `Address.fromMap` deserialises the PostgREST response.
+- Created `lib/services/address_service.dart` — two methods: `fetchDefaultAddress(userId)` returns the user's default address row or `null` (silent failure); `saveDefaultAddress(...)` deletes any existing default row first, then inserts a fresh one with `is_default = true`. Delete-then-insert is required because the `addresses` table has a unique partial index on `(user_id) WHERE is_default = true`, which rejects a plain upsert.
+- Created `lib/providers/address_provider.dart` — `defaultAddressProvider` watches `currentUserProvider` and calls `fetchDefaultAddress` on auth change; returns `null` for signed-out users. Ran build_runner to generate the `.g.dart` file.
+- Implemented `lib/screens/account/edit_profile/edit_profile_screen.dart` — `ConsumerStatefulWidget` with five `TextEditingController`s (name, phone, street address, area, city). Pre-fill logic runs once on first data-available frame via a `_prefilled` guard flag (avoids overwriting user edits on hot-reload). All fields validated before the save is attempted. On success: calls `ref.invalidate(defaultAddressProvider)` to refresh the cache, shows a snackbar, then pops or navigates to `/account`.
+
+**Why done this way:**
+- The implementation diverged from the original plan (`mobile_plan.md §4-4` specified `profiles` table + name/phone only). The `profiles` table dependency was removed during Phase 4-1 refactoring when it became clear the checkout pre-fill needed full address fields (street, area, city). Extending Edit Profile to save the same `addresses` table row means checkout and profile share one source of truth with no duplication.
+- Delete-before-insert instead of upsert: Supabase's `upsert` on a table with a partial unique index can throw `23505 unique violation` in some Postgres versions. Explicit delete + insert is more predictable and avoids a silent constraint race.
+- `ref.invalidate(defaultAddressProvider)` is used rather than `ref.refresh` — the screen is about to pop, so there is no point awaiting the re-fetch; the caller (AccountHomeScreen or CheckoutScreen) will trigger a fresh fetch when it rebuilds.
+
+**Issues encountered:**
+- None. Zero analyzer issues, `dart format` clean.
+
+**User confirmed. 4-4 marked complete. Phase 4 committed as `feat(account): Phase 4-4 — edit profile with default address saving`.**
+
+---
+
+## 2026-05-20 — Phase 5-1: UX Polish
+
+**What was done:**
+- **Skeleton loaders:** Added three composite skeleton widgets to `lib/widgets/common/loading_indicator.dart`:
+  - `AppMealCardSkeleton` — matches the MealCard `AspectRatio(4/3)` image + text-block layout. Placed in a `SliverGrid` so the loading state fills the same grid positions as real cards.
+  - `AppPlanCardSkeleton` — matches the PlanCard full-width container with left olive border, badge, and trailing arrow.
+  - `AppOrderTileSkeleton` — matches the OrderHistory tile with ID, date, status pill, and total.
+  Applied to: MenuScreen (grid), PlansScreen (list), OrderHistoryScreen (list). All three screens now show skeletons instead of a bare spinner while the Riverpod `AsyncValue` is in the loading state.
+- **Haptic feedback:** `HapticFeedback.lightImpact()` added in two places:
+  - `WishlistButton._handleTap()` — fires immediately before the async toggle so the physical response is synchronous with the tap.
+  - `MealDetailScreen` add-to-cart handler — same pattern.
+- **Page transitions:** Added a `_slide()` helper to `lib/router/router.dart` that wraps any screen in a `CustomTransitionPage` combining a `FadeTransition` (easeOut) with a 4 % upward `SlideTransition` (Offset `(0, 0.04) → zero`). Duration: 220 ms forward, 180 ms reverse. Every non-tab route (meal detail, plan detail, checkout, auth screens, all account sub-screens) was converted from `builder:` to `pageBuilder:` using `_slide()`. The four shell tabs keep Flutter's default instant tab switch.
+
+**Why done this way:**
+- Composite skeleton widgets are defined once in `loading_indicator.dart` and dropped into any screen — no per-screen shimmer logic needed.
+- Haptic feedback is called before `await` so the physical response is not delayed by the async DB round-trip.
+- The 4 % upward slide (rather than a full horizontal push) avoids the jarring feel of a full-screen slide on mobile, while still conveying depth and directionality. The asymmetric durations (220 ms in / 180 ms out) make back navigation feel snappier than forward navigation.
+
+**Issues encountered:**
+- None. Zero analyzer issues, `dart format` clean.
+
+**User confirmed. 5-1 marked complete. Committed as `feat(polish): Phase 5-1 — skeleton loaders, transitions, haptic feedback`.**
+
+---
+
+## 2026-05-20 — Phase 5-2: App Identity
+
+**What was done:**
+- Added `flutter_launcher_icons: ^0.14.3` (dev dep) and `flutter_native_splash: ^2.4.3` (runtime dep) to `pubspec.yaml`. Ran `flutter pub get`.
+- Placed the SavorLean logo PNG at `assets/icon/icon.png` (1024 × 1024).
+- Configured `flutter_launcher_icons` in `pubspec.yaml`: target file `launcher_icon`, adaptive icon with white background + logo foreground for Android 8+, `remove_alpha_ios: true` for App Store compliance.
+- Configured `flutter_native_splash` in `pubspec.yaml`: white background, logo centred, enabled for both Android and iOS, Android 12 section uses the adaptive icon format.
+- Ran `dart run flutter_launcher_icons` — generated all `mipmap-*` density folders in `android/app/src/main/res/` and all `AppIcon*` asset catalog entries in `ios/Runner/Assets.xcassets/`.
+- Ran `dart run flutter_native_splash:create` — generated `launch_background.xml` (Android) and updated `LaunchScreen.storyboard` (iOS) with the branded splash layout.
+- Set `android:label="SavorLean"` in `AndroidManifest.xml` and `CFBundleDisplayName` / `CFBundleName` → `"SavorLean"` in `ios/Runner/Info.plist`.
+- Updated `lib/main.dart`: imported `flutter_native_splash`, called `FlutterNativeSplash.preserve(widgetsBinding: binding)` before `Supabase.initialize`, and `FlutterNativeSplash.remove()` immediately after — this keeps the native splash visible during the async Supabase init window instead of flashing a blank white frame.
+- Also updated `Supabase.initialize` to pass `authOptions: FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce)` — required for the PKCE-based password reset deep link flow built in Phase 5-3.
+
+**Why done this way:**
+- `FlutterNativeSplash.preserve` + `remove` around `Supabase.initialize` is the recommended pattern from the `flutter_native_splash` docs for apps that do async work before `runApp`. Without it, Android and iOS both flash a blank screen between the native splash and the first Flutter frame.
+- `remove_alpha_ios: true` strips the alpha channel from the iOS icon, which is required by App Store validation — icons with transparency are rejected at upload.
+- PKCE (`AuthFlowType.pkce`) was enabled at this point because Phase 5-3 requires it for the password reset deep link to correctly exchange the token on app resume. Without PKCE, Supabase's implicit flow does not deliver the `passwordRecovery` event reliably.
+
+**Issues encountered:**
+- Adaptive icon on Android 8+ initially showed a white circle border around the logo (the launcher applied a circular mask to the foreground layer, cutting into the logo). Fixed by replacing `assets/icon/icon.png` with a version that has a **transparent** background — with transparency the circular mask reveals only the logo, not a white ring. Follow-up commit: `fix(identity): replace icon with transparent PNG to remove adaptive circle artefact`.
+
+**User confirmed. 5-2 marked complete. Committed as `feat(identity): Phase 5-2 — app icon, splash screen, and app name` + fix commit.**
+
+---
+
+## 2026-05-20 — Phase 5-3: Deep Links & URL Scheme
+
+**What was done:**
+- **Android:** Confirmed and refined the `intent-filter` in `AndroidManifest.xml`. Set explicit `android:host` values — `login-callback` and `reset-callback` — so the filter only matches `savorlean://login-callback` and `savorlean://reset-callback`, not every possible `savorlean://` URL.
+- **iOS:** Added `CFBundleURLTypes` to `ios/Runner/Info.plist` registering the `savorlean` URL scheme so iOS will route all `savorlean://` deep links back to the app.
+- **`ForgotPasswordScreen`:** `resetPasswordForEmail` call sets `redirectTo: 'savorlean://login-callback'`. Supabase appends the PKCE token to this URL and puts it in the reset email. When the user taps the link, the OS opens the app via the registered scheme.
+- **`ResetPasswordScreen`** (`lib/screens/auth/reset_password/reset_password_screen.dart`): New `StatefulWidget` at `/reset-password`. Two password fields (new password, confirm) with show/hide toggles. Validates minimum 8-character length and that both fields match. Calls `auth.updateUser(UserAttributes(password: ...))` on submit. On success: shows a snackbar and navigates to `/` with `context.go('/')`.
+- **Router — `_AuthChangeNotifier` extended:** Now tracks `lastEvent` from the Supabase auth stream. When `passwordRecovery` is detected, the global `_redirect()` function sends the user to `/reset-password` regardless of current location. When `userUpdated` fires (password saved successfully), `lastEvent` is set to `null` to stop the recovery redirect from firing again — without this, any subsequent navigation would re-trigger the redirect loop.
+- **New route:** `/reset-password` added to `appRouter` using `pageBuilder` with `_slide()`.
+- **Manual step (user action required):** `savorlean://login-callback` must be added to Supabase dashboard → Authentication → URL Configuration → Redirect URLs before the deep link flow will work end-to-end.
+
+**Why done this way:**
+- Explicit `android:host` values on the Android intent-filter follow Android security best practices — an overly broad `<data android:scheme="savorlean" />` without a host would match any `savorlean://` URL and could be exploited by other apps registering the same scheme.
+- `lastEvent = null` after `userUpdated` is critical: if not cleared, the `passwordRecovery` event stays in memory and the redirect guard keeps sending the user back to `/reset-password` on every future navigation — essentially breaking the app until it is restarted.
+- `automaticallyImplyLeading: false` on `ResetPasswordScreen`'s `AppBar` removes the back button — the user must complete or cancel the reset, not navigate back to an ambiguous previous screen mid-recovery.
+- PKCE flow (enabled in Phase 5-2) is required: the token in the deep link URL is a PKCE code verifier, not an implicit access token. Without `AuthFlowType.pkce`, Supabase does not correctly exchange the code on app resume and the `passwordRecovery` event is never fired.
+
+**Issues encountered:**
+- None during the platform config work. The one remaining blocker is the manual Supabase dashboard step (Redirect URLs) which requires user action — cannot be done in code.
+
+**User confirmed. 5-3 marked complete. Committed as `feat(deep-links): Phase 5-3 — register savorlean:// URL scheme for auth callbacks`.**
+
+---
+
+## 2026-05-20 — Phase 5-4: Performance
+
+**What was done:**
+- **`cached_network_image` audit:** Verified that every image-loading widget in the app uses `CachedNetworkImage` — `MealCard`, `CartItemTile`, the home screen carousel, and `MealDetailScreen` hero. No bare `Image.network` calls exist anywhere. No code changes needed for this item.
+- **Pagination guard on menu:** Added `.limit(100)` to both branches of `fetchMeals()` in `lib/services/meal_service.dart` (with and without category filter). Full page-by-page pagination was not implemented because the menu screen's search is client-side — paginating would silently restrict search to only the loaded page, which is confusing UX. A 100-item cap is a practical guard for the foreseeable catalog size; if the menu ever exceeds 100 meals, server-side search and cursor-based pagination should be introduced together as a single feature.
+- **Riverpod rebuild scope — `WishlistButton`:** Changed `ref.watch(wishlistProvider)` to `ref.watch(wishlistProvider.select(...))` in `lib/widgets/wishlist_button/wishlist_button.dart`. Previously every `WishlistButton` on every visible `MealCard` watched the full `Set<String>`, so toggling one meal caused O(n) rebuilds across all visible cards. With `.select((v) => v.asData?.value.contains(mealId) ?? false)`, each button now only rebuilds when its own meal's wishlist status changes. The intermediate `wishlistIds` variable was removed — `isWishlisted` is now derived directly from the select.
+- **`redirectTo` trailing slash fix:** Updated `ForgotPasswordScreen` to use `'savorlean://login-callback/'` (with trailing slash) to match the URL registered in the Supabase dashboard. A mismatch here would cause Supabase to reject the redirect and break the password reset flow.
+
+**Why done this way:**
+- `.limit(100)` on `fetchMeals` rather than a "load more" button: the two features (pagination + search) have conflicting requirements. Solving them together properly requires server-side search, which is out of scope for this phase. The limit acts as a safety cap without changing the user experience.
+- `wishlistProvider.select()` is the idiomatic Riverpod pattern for watching a computed slice of a larger state object. It avoids the need for per-meal providers while still preventing unnecessary rebuilds.
+
+**Issues encountered:**
+- None. Zero analyzer issues, `dart format` clean.
+
+**User confirmed. 5-4 marked complete.**
