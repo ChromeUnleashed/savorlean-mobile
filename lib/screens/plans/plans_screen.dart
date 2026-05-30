@@ -6,6 +6,7 @@ import '../../providers/plan_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/loading_indicator.dart';
+import '../../widgets/plan_card/custom_plan_banner.dart';
 import '../../widgets/plan_card/plan_card.dart';
 
 class PlansScreen extends ConsumerWidget {
@@ -44,18 +45,41 @@ class PlansScreen extends ConsumerWidget {
               ),
             );
           }
+
+          // Separate the single custom plan from the ready-made plans.
+          final customPlan = plans.cast<dynamic>().firstWhere(
+            (p) => (p.type as String).toLowerCase() == 'custom',
+            orElse: () => null,
+          );
+          final regularPlans = plans
+              .where((p) => p.type.toLowerCase() != 'custom')
+              .toList();
+
+          // Build the list items: banner → section label → regular cards.
+          final items = <Widget>[
+            if (customPlan != null)
+              CustomPlanBanner(
+                plan: customPlan,
+                onTap: () => context.push('/plans/${customPlan.slug}'),
+              ),
+            if (customPlan != null && regularPlans.isNotEmpty) ...[
+              const SizedBox(height: 28),
+              const PlanSectionLabel(label: 'READY-MADE PLANS'),
+              const SizedBox(height: 16),
+            ],
+            for (int i = 0; i < regularPlans.length; i++) ...[
+              if (i > 0) const SizedBox(height: 20),
+              PlanCard(
+                plan: regularPlans[i],
+                onTap: () => context.push('/plans/${regularPlans[i].slug}'),
+              ),
+            ],
+          ];
+
           return RefreshIndicator(
             color: AppColors.cta,
             onRefresh: () async => ref.invalidate(plansProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: plans.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => PlanCard(
-                plan: plans[i],
-                onTap: () => context.push('/plans/${plans[i].slug}'),
-              ),
-            ),
+            child: ListView(padding: const EdgeInsets.all(16), children: items),
           );
         },
         loading: () => ListView.separated(

@@ -153,42 +153,51 @@ class AppMealCardSkeleton extends StatelessWidget {
   }
 }
 
-/// Skeleton placeholder matching the PlanCard full-width layout.
+/// Skeleton placeholder matching the PlanCard image-on-top layout.
 class AppPlanCardSkeleton extends StatelessWidget {
   const AppPlanCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(2),
-        border: const Border(
-          left: BorderSide(color: AppColors.border, width: 4),
-        ),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: AppColors.border),
       ),
-      child: const Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
+          // Image area — matches PlanCard's AspectRatio(16/9)
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: LayoutBuilder(
+              builder: (_, c) =>
+                  AppSkeletonBox(height: c.maxHeight, borderRadius: 0),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppSkeletonBox(width: 52, height: 20, borderRadius: 2),
+                Row(
+                  children: [
+                    Expanded(child: AppSkeletonBox(width: 140, height: 16)),
+                    SizedBox(width: 8),
+                    AppSkeletonBox(width: 14, height: 14),
+                  ],
+                ),
                 SizedBox(height: 8),
-                AppSkeletonBox(width: 130, height: 16),
-                SizedBox(height: 6),
                 AppSkeletonBox(height: 12),
                 SizedBox(height: 4),
-                AppSkeletonBox(width: 160, height: 12),
+                AppSkeletonBox(width: 180, height: 12),
                 SizedBox(height: 10),
-                AppSkeletonBox(width: 80, height: 14),
+                AppSkeletonBox(width: 90, height: 14),
               ],
             ),
           ),
-          SizedBox(width: 12),
-          AppSkeletonBox(width: 16, height: 16),
         ],
       ),
     );

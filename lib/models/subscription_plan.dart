@@ -81,6 +81,7 @@ class SubscriptionPlan {
   final String scheduleMessage;
   final bool isActive;
   final bool isFeatured;
+  final String? imageUrl;
   final List<PlanPricing> pricing;
   final List<PlanMealSlot> slots;
 
@@ -94,6 +95,7 @@ class SubscriptionPlan {
     required this.scheduleMessage,
     required this.isActive,
     required this.isFeatured,
+    this.imageUrl,
     required this.pricing,
     required this.slots,
   });
@@ -131,6 +133,7 @@ class SubscriptionPlan {
       scheduleMessage: json['schedule_message'] as String,
       isActive: json['is_active'] as bool,
       isFeatured: json['is_featured'] as bool,
+      imageUrl: json['image_url'] as String?,
       pricing: pricingJson.map((e) => PlanPricing.fromJson(e)).toList(),
       slots: slotsJson.map((e) => PlanMealSlot.fromJson(e)).toList(),
     );
