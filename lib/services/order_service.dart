@@ -64,6 +64,10 @@ class OrderService {
         row['plan_config'] = {
           'duration': item.planDuration,
           'meals_per_day': item.planMealsPerDay,
+          // Custom plans include which days the customer wants delivery.
+          if (item.planSelectedDays != null &&
+              item.planSelectedDays!.isNotEmpty)
+            'selected_days': item.planSelectedDays,
         };
       }
       return row;

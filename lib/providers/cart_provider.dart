@@ -39,7 +39,14 @@ class Cart extends _$Cart {
     }
   }
 
-  void addPlan(SubscriptionPlan plan, PlanPricing pricing) {
+  // Adds a subscription plan to the cart.
+  // selectedDays is an optional list of delivery days (custom plans only),
+  // e.g. ['monday', 'wednesday', 'friday'].
+  void addPlan(
+    SubscriptionPlan plan,
+    PlanPricing pricing, {
+    List<String>? selectedDays,
+  }) {
     final cartId = '${plan.id}_${pricing.duration}_${pricing.mealsPerDay}';
     final idx = state.indexWhere((i) => i.cartId == cartId);
     if (idx >= 0) {
@@ -62,6 +69,9 @@ class Cart extends _$Cart {
           planDuration: pricing.duration,
           planDurationLabel: pricing.durationLabel,
           planMealsPerDay: pricing.mealsPerDay,
+          planSelectedDays: selectedDays != null && selectedDays.isNotEmpty
+              ? List<String>.unmodifiable(selectedDays)
+              : null,
         ),
       ];
     }

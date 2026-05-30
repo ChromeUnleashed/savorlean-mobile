@@ -21,6 +21,17 @@ const _dayOrder = [
 ];
 const _slotOrder = ['breakfast', 'lunch', 'dinner'];
 
+// Short labels shown inside the circular day-picker chips.
+const _dayLabels = {
+  'monday': 'Mon',
+  'tuesday': 'Tue',
+  'wednesday': 'Wed',
+  'thursday': 'Thu',
+  'friday': 'Fri',
+  'saturday': 'Sat',
+  'sunday': 'Sun',
+};
+
 class PlanDetailScreen extends ConsumerStatefulWidget {
   const PlanDetailScreen({super.key, required this.slug});
 
@@ -33,6 +44,10 @@ class PlanDetailScreen extends ConsumerStatefulWidget {
 class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
   String? _selectedDuration;
   int? _selectedMealsPerDay;
+
+  // Which days the customer wants delivery — only used for custom plans.
+  // Stored as lowercase day names matching _dayOrder.
+  final Set<String> _selectedDays = {};
 
   void _initSelection(SubscriptionPlan plan) {
     if (_selectedDuration != null || plan.pricing.isEmpty) return;
@@ -96,10 +111,25 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
   }
 
   Widget _buildContent(SubscriptionPlan plan) {
+    final isCustom = plan.type.toLowerCase() == 'custom';
+
     final selectedPricing =
         (_selectedDuration != null && _selectedMealsPerDay != null)
         ? plan.pricingFor(_selectedDuration!, _selectedMealsPerDay!)
         : null;
+
+    // For custom plans the user must also pick at least one delivery day.
+    final canAddToCart =
+        selectedPricing != null && (!isCustom || _selectedDays.isNotEmpty);
+
+    String buttonLabel;
+    if (selectedPricing == null) {
+      buttonLabel = 'Select Options to Continue';
+    } else if (isCustom && _selectedDays.isEmpty) {
+      buttonLabel = 'Select Delivery Days to Continue';
+    } else {
+      buttonLabel = 'Add to Cart — Rs. ${selectedPricing.pricePkr}';
+    }
 
     return CustomScrollView(
       slivers: [
@@ -143,37 +173,100 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                 ],
                 const SizedBox(height: 32),
 
-                // Pricing selector
+                // ── Pricing selectors ──────────────────────────────────
                 if (plan.pricing.isNotEmpty) ...[
-                  _SectionHeading('Choose Duration'),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: plan.availableDurations.map((d) {
-                      final selected = _selectedDuration == d;
-                      return _SelectChip(
-                        label: plan.pricing
-                            .firstWhere((p) => p.duration == d)
-                            .durationLabel,
-                        selected: selected,
-                        onTap: () => setState(() => _selectedDuration = d),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  _SectionHeading('Meals per Day'),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: plan.availableMealsPerDay.map((n) {
-                      final selected = _selectedMealsPerDay == n;
-                      return _SelectChip(
-                        label: '$n Meal${n > 1 ? 's' : ''}',
-                        selected: selected,
-                        onTap: () => setState(() => _selectedMealsPerDay = n),
-                      );
-                    }).toList(),
-                  ),
+                  // Custom plans: Meals → Days → Duration (matches web order).
+                  // Other plans: Duration → Meals (current order).
+                  if (isCustom) ...[
+                    _SectionHeading('Meals per Day'),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: plan.availableMealsPerDay.map((n) {
+                        final selected = _selectedMealsPerDay == n;
+                        return _SelectChip(
+                          label: '$n Meal${n > 1 ? 's' : ''}',
+                          selected: selected,
+                          onTap: () => setState(() => _selectedMealsPerDay = n),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ── Days per week picker (custom plans only) ───────
+                    _SectionHeading('Days per Week'),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Choose which days you want meals delivered.',
+                      style: AppTextStyles.bodyMuted,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: _dayOrder.map((day) {
+                        final selected = _selectedDays.contains(day);
+                        return _DayChip(
+                          label: _dayLabels[day]!,
+                          selected: selected,
+                          onTap: () => setState(() {
+                            if (selected) {
+                              _selectedDays.remove(day);
+                            } else {
+                              _selectedDays.add(day);
+                            }
+                          }),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    _SectionHeading('Choose Duration'),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: plan.availableDurations.map((d) {
+                        final selected = _selectedDuration == d;
+                        return _SelectChip(
+                          label: plan.pricing
+                              .firstWhere((p) => p.duration == d)
+                              .durationLabel,
+                          selected: selected,
+                          onTap: () => setState(() => _selectedDuration = d),
+                        );
+                      }).toList(),
+                    ),
+                  ] else ...[
+                    _SectionHeading('Choose Duration'),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: plan.availableDurations.map((d) {
+                        final selected = _selectedDuration == d;
+                        return _SelectChip(
+                          label: plan.pricing
+                              .firstWhere((p) => p.duration == d)
+                              .durationLabel,
+                          selected: selected,
+                          onTap: () => setState(() => _selectedDuration = d),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    _SectionHeading('Meals per Day'),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: plan.availableMealsPerDay.map((n) {
+                        final selected = _selectedMealsPerDay == n;
+                        return _SelectChip(
+                          label: '$n Meal${n > 1 ? 's' : ''}',
+                          selected: selected,
+                          onTap: () => setState(() => _selectedMealsPerDay = n),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+
                   const SizedBox(height: 24),
                   // Price display
                   Container(
@@ -221,16 +314,21 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                   _ScheduleView(slots: plan.slots),
                 const SizedBox(height: 32),
 
-                // Add to Cart button
+                // Add to Cart button — disabled until all required options
+                // are selected (for custom plans, days must also be chosen).
                 AppButton(
-                  label: selectedPricing != null
-                      ? 'Add to Cart — Rs. ${selectedPricing.pricePkr}'
-                      : 'Select Options to Continue',
-                  onPressed: selectedPricing != null
+                  label: buttonLabel,
+                  onPressed: canAddToCart
                       ? () {
                           ref
                               .read(cartProvider.notifier)
-                              .addPlan(plan, selectedPricing);
+                              .addPlan(
+                                plan,
+                                selectedPricing,
+                                selectedDays: isCustom
+                                    ? List<String>.from(_selectedDays)
+                                    : null,
+                              );
                           final messenger = ScaffoldMessenger.of(context);
                           messenger.clearSnackBars();
                           final entry = messenger.showSnackBar(
@@ -296,9 +394,9 @@ class _SelectChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.olive : Colors.transparent,
+          color: selected ? AppColors.cta : Colors.transparent,
           border: Border.all(
-            color: selected ? AppColors.olive : AppColors.border,
+            color: selected ? AppColors.cta : AppColors.border,
           ),
           borderRadius: BorderRadius.circular(2),
         ),
@@ -308,6 +406,49 @@ class _SelectChip extends StatelessWidget {
             fontSize: 13,
             fontWeight: FontWeight.w500,
             color: selected ? Colors.white : AppColors.textMuted,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A circular toggle chip used for the days-per-week picker on custom plans.
+/// Tapping toggles between selected (olive fill) and unselected (border only).
+class _DayChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DayChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: selected ? AppColors.cta : Colors.transparent,
+          border: Border.all(
+            color: selected ? AppColors.cta : AppColors.border,
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: AppTextStyles.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: selected ? Colors.white : AppColors.textMuted,
+            ),
           ),
         ),
       ),
