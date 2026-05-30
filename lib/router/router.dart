@@ -64,9 +64,7 @@ class _AuthChangeNotifier extends ChangeNotifier {
       // Track the latest event so the redirect function can react to it.
       // Clear lastEvent after a password update so we stop redirecting to
       // /reset-password once the user has finished.
-      lastEvent = data.event == AuthChangeEvent.userUpdated
-          ? null
-          : data.event;
+      lastEvent = data.event == AuthChangeEvent.userUpdated ? null : data.event;
       notifyListeners();
     });
   }
@@ -213,10 +211,8 @@ final appRouter = GoRouter(
     // ------------------------------------------------------------------
     GoRoute(
       path: '/menu/:slug',
-      pageBuilder: (context, state) => _slide(
-        state,
-        MealDetailScreen(slug: state.pathParameters['slug']!),
-      ),
+      pageBuilder: (context, state) =>
+          _slide(state, MealDetailScreen(slug: state.pathParameters['slug']!)),
     ),
     GoRoute(
       path: '/plans',
@@ -233,8 +229,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/checkout',
-      pageBuilder: (context, state) =>
-          _slide(state, const CheckoutScreen()),
+      pageBuilder: (context, state) => _slide(state, const CheckoutScreen()),
       routes: [
         GoRoute(
           path: 'confirmation',
@@ -256,8 +251,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/register',
-      pageBuilder: (context, state) =>
-          _slide(state, const RegisterScreen()),
+      pageBuilder: (context, state) => _slide(state, const RegisterScreen()),
     ),
     GoRoute(
       path: '/forgot-password',

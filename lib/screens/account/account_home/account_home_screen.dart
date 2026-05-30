@@ -49,7 +49,8 @@ class AccountHomeScreen extends ConsumerWidget {
     final String displayName;
     if (address?.fullName.isNotEmpty == true) {
       displayName = address!.fullName;
-    } else if ((user.userMetadata?['full_name'] as String?)?.isNotEmpty == true) {
+    } else if ((user.userMetadata?['full_name'] as String?)?.isNotEmpty ==
+        true) {
       displayName = user.userMetadata!['full_name'] as String;
     } else {
       displayName = user.email ?? 'Account';

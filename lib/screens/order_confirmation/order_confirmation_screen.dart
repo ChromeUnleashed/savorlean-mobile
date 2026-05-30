@@ -105,7 +105,9 @@ class _OrderConfirmationScreenState
                     const SizedBox(height: 12),
                     _DetailRow(
                       label: 'Payment',
-                      value: isBankTransfer ? 'Bank Transfer' : 'Cash on Delivery',
+                      value: isBankTransfer
+                          ? 'Bank Transfer'
+                          : 'Cash on Delivery',
                     ),
                   ],
                 ),
@@ -147,14 +149,19 @@ class _BankTransferBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bankName     = settings['bank_name'];
-    final accountTitle = settings['account_title'] ?? settings['bank_account_title'];
-    final accountNo    = settings['account_number'] ?? settings['bank_account_number'];
-    final iban         = settings['iban'];
-    final whatsapp     = settings['whatsapp_number'] ?? settings['whatsapp'];
+    final bankName = settings['bank_name'];
+    final accountTitle =
+        settings['account_title'] ?? settings['bank_account_title'];
+    final accountNo =
+        settings['account_number'] ?? settings['bank_account_number'];
+    final iban = settings['iban'];
+    final whatsapp = settings['whatsapp_number'] ?? settings['whatsapp'];
 
-    final hasDetails = bankName != null || accountTitle != null ||
-        accountNo != null || iban != null;
+    final hasDetails =
+        bankName != null ||
+        accountTitle != null ||
+        accountNo != null ||
+        iban != null;
 
     final instruction = whatsapp != null
         ? 'Please send a screenshot of your transfer confirmation to our WhatsApp at $whatsapp. Your order will be processed once payment is verified.'
@@ -173,8 +180,11 @@ class _BankTransferBox extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.account_balance_outlined,
-                  size: 16, color: AppColors.olive),
+              const Icon(
+                Icons.account_balance_outlined,
+                size: 16,
+                color: AppColors.olive,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Bank Transfer Instructions',
@@ -189,18 +199,19 @@ class _BankTransferBox extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             instruction,
-            style: AppTextStyles.inter(fontSize: 13, color: AppColors.textPrimary),
+            style: AppTextStyles.inter(
+              fontSize: 13,
+              color: AppColors.textPrimary,
+            ),
           ),
           if (hasDetails) ...[
             const SizedBox(height: 12),
-            if (bankName != null)
-              _InfoLine(label: 'Bank', value: bankName),
+            if (bankName != null) _InfoLine(label: 'Bank', value: bankName),
             if (accountTitle != null)
               _InfoLine(label: 'Account Title', value: accountTitle),
             if (accountNo != null)
               _InfoLine(label: 'Account No.', value: accountNo),
-            if (iban != null)
-              _InfoLine(label: 'IBAN', value: iban),
+            if (iban != null) _InfoLine(label: 'IBAN', value: iban),
           ] else if (settings.isEmpty) ...[
             // Settings are still loading
             const SizedBox(height: 8),

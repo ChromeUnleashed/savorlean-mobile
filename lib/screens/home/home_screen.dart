@@ -225,10 +225,8 @@ class _FeaturedMealsSection extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
           itemCount: 3,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
-          itemBuilder: (_, _) => const SizedBox(
-            width: 160,
-            child: AppMealCardSkeleton(),
-          ),
+          itemBuilder: (_, _) =>
+              const SizedBox(width: 160, child: AppMealCardSkeleton()),
         ),
       ),
       error: (_, _) => const SizedBox.shrink(),

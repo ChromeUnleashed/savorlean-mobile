@@ -90,12 +90,14 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
             onTap: () => Navigator.of(context).pop(),
           ),
           actions: [
-            // Wishlist heart — filled when the meal is saved, outlined when not.
-            Builder(
-              builder: (context) {
-                final wishlistIds =
-                    ref.watch(wishlistProvider).asData?.value ?? {};
-                final isWishlisted = wishlistIds.contains(meal.id);
+            // Scoped select — only rebuilds when THIS meal's wishlist status changes.
+            Consumer(
+              builder: (context, ref, _) {
+                final isWishlisted = ref.watch(
+                  wishlistProvider.select(
+                    (v) => v.asData?.value.contains(meal.id) ?? false,
+                  ),
+                );
                 return _CircleButton(
                   icon: isWishlisted ? Icons.favorite : Icons.favorite_border,
                   color: isWishlisted ? AppColors.cta : AppColors.textPrimary,

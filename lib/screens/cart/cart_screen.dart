@@ -278,7 +278,8 @@ class _CartContentState extends ConsumerState<_CartContent> {
                       ),
                       children: [
                         const TextSpan(
-                          text: 'Sign up to save your address for faster checkouts. ',
+                          text:
+                              'Sign up to save your address for faster checkouts. ',
                         ),
                         WidgetSpan(
                           alignment: PlaceholderAlignment.baseline,

@@ -80,16 +80,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ref.invalidate(defaultAddressProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile saved')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile saved')));
         context.canPop() ? context.pop() : context.go('/account');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not save: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
