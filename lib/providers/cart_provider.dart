@@ -9,7 +9,7 @@ import '../services/promo_service.dart';
 
 part 'cart_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Cart extends _$Cart {
   @override
   List<CartItem> build() => const [];
@@ -64,6 +64,7 @@ class Cart extends _$Cart {
           cartId: cartId,
           planId: plan.id,
           name: plan.name,
+          imageUrl: plan.imageUrl,
           unitPricePkr: pricing.pricePkr,
           quantity: 1,
           planDuration: pricing.duration,
@@ -106,7 +107,7 @@ class Cart extends _$Cart {
   void clear() => state = const [];
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AppliedPromo extends _$AppliedPromo {
   @override
   PromoCode? build() => null;

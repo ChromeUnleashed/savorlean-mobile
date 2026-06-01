@@ -61,10 +61,14 @@ class _AuthChangeNotifier extends ChangeNotifier {
 
   _AuthChangeNotifier() {
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      // Track the latest event so the redirect function can react to it.
-      // Clear lastEvent after a password update so we stop redirecting to
-      // /reset-password once the user has finished.
-      lastEvent = data.event == AuthChangeEvent.userUpdated ? null : data.event;
+      final incoming = data.event == AuthChangeEvent.userUpdated
+          ? null
+          : data.event;
+      // Deduplicate: Supabase can re-emit the same event (e.g. signedOut) during
+      // session cleanup. Suppress identical consecutive events so go_router does
+      // not re-run its navigation stack rebuild unnecessarily.
+      if (incoming == lastEvent) return;
+      lastEvent = incoming;
       notifyListeners();
     });
   }
@@ -92,7 +96,7 @@ String? _redirect(BuildContext context, GoRouterState state) {
 
   // Send unsigned-in users away from protected routes to the login screen.
   // The redirect_to query param is read by LoginScreen after a successful login.
-  final isProtected = loc.startsWith('/account') || loc.startsWith('/checkout');
+  final isProtected = loc.startsWith('/account');
   if (isProtected && !signedIn) {
     return Uri(
       path: '/login',

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +27,13 @@ class MealDetailScreen extends ConsumerStatefulWidget {
 
 class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
   int _quantity = 1;
+  Timer? _snackbarTimer;
+
+  @override
+  void dispose() {
+    _snackbarTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,18 +271,27 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   onPressed: () {
                     HapticFeedback.lightImpact();
                     ref.read(cartProvider.notifier).addMeal(meal, _quantity);
+                    // context.mounted checks _ElementLifecycle.active — safer than
+                    // State.mounted which can return true for defunct elements.
+                    if (!context.mounted) return;
                     final messenger = ScaffoldMessenger.of(context);
                     messenger.clearSnackBars();
-                    final entry = messenger.showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(
                         content: Text('${meal.name} added to cart'),
                         action: SnackBarAction(
                           label: 'Open Cart',
-                          onPressed: () => context.go('/cart'),
+                          onPressed: () {
+                            if (context.mounted) context.go('/cart');
+                          },
                         ),
                       ),
                     );
-                    Future.delayed(const Duration(seconds: 3), entry.close);
+                    _snackbarTimer?.cancel();
+                    _snackbarTimer = Timer(
+                      const Duration(seconds: 3),
+                      messenger.hideCurrentSnackBar,
+                    );
                   },
                   variant: AppButtonVariant.ctaLight,
                   fullWidth: true,

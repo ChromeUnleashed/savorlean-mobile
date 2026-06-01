@@ -215,3 +215,7 @@
 - [ ] Xcode signing configuration
 - [ ] `flutter build ipa --release --dart-define-from-file=dart_defines.json`
 - [ ] App Store Connect submission
+
+### 6-5 — Portfolio Distribution
+- [ ] Create GitHub Release and attach signed APK (tag: v1.0.0)
+- [ ] Add "Download the App" mobile banner to savorlean.netlify.app linking to the GitHub Release APK

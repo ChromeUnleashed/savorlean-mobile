@@ -19,7 +19,7 @@ final class CartProvider extends $NotifierProvider<Cart, List<CartItem>> {
         argument: null,
         retry: null,
         name: r'cartProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -40,7 +40,7 @@ final class CartProvider extends $NotifierProvider<Cart, List<CartItem>> {
   }
 }
 
-String _$cartHash() => r'5984ff296fa2a5627aba8b5d174d09cdb8caa124';
+String _$cartHash() => r'0db4fdd3f62e35f65613b6a94ee87b4f0db196c4';
 
 abstract class _$Cart extends $Notifier<List<CartItem>> {
   List<CartItem> build();
@@ -71,7 +71,7 @@ final class AppliedPromoProvider
         argument: null,
         retry: null,
         name: r'appliedPromoProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -92,7 +92,7 @@ final class AppliedPromoProvider
   }
 }
 
-String _$appliedPromoHash() => r'049d34f8b4f3d5bdd9492561696befc2dbdf7e77';
+String _$appliedPromoHash() => r'0d4c6e7445c6e94efd30b6d18af105fe0cc0e6f9';
 
 abstract class _$AppliedPromo extends $Notifier<PromoCode?> {
   PromoCode? build();

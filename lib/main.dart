@@ -6,6 +6,7 @@
 // Run with: flutter run --dart-define-from-file=dart_defines.json
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,6 +22,12 @@ Future<void> main() async {
   // Preserve the native splash screen until we finish initialising Supabase.
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
+
+  // Lock the app to portrait mode — standard for e-commerce apps.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await Supabase.initialize(
     url: _supabaseUrl,
