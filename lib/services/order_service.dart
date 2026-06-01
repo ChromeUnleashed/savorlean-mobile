@@ -25,46 +25,20 @@ class OrderService {
     String? preferredStartDate,
     String? timeWindow,
   }) async {
-    final orderRow = await _client
-        .from('orders')
-        .insert({
-          'user_id': userId,
-          'email': email,
-          'subtotal_pkr': subtotalPkr,
-          'delivery_fee_pkr': 0,
-          'discount_pkr': discountPkr,
-          'total_pkr': totalPkr,
-          'payment_method': paymentMethod,
-          'meal_instructions': mealInstructions,
-          'shipping_full_name': fullName,
-          'shipping_phone_number': phoneNumber,
-          'shipping_street_address': streetAddress,
-          'shipping_area_zone': areaZone,
-          'shipping_city': city,
-          if (preferredStartDate != null && preferredStartDate.isNotEmpty)
-            'shipping_preferred_start_date': preferredStartDate,
-          if (timeWindow != null && timeWindow.isNotEmpty)
-            'shipping_time_window': timeWindow,
-        })
-        .select('id')
-        .single();
-
-    final orderId = orderRow['id'] as String;
-
-    final orderItems = items.map((item) {
+    // Build items list for the RPC — matches the JSONB shape create_order expects.
+    final itemsForRpc = items.map((item) {
       final row = <String, dynamic>{
-        'order_id': orderId,
-        'meal_id': item.mealId,
-        'plan_id': item.planId,
+        'meal_id': item.mealId ?? '',
+        'plan_id': item.planId ?? '',
         'quantity': item.quantity,
         'unit_price_pkr': item.unitPricePkr,
         'line_total_pkr': item.lineTotalPkr,
+        'plan_config': null,
       };
       if (item.planId != null) {
         row['plan_config'] = {
           'duration': item.planDuration,
           'meals_per_day': item.planMealsPerDay,
-          // Custom plans include which days the customer wants delivery.
           if (item.planSelectedDays != null &&
               item.planSelectedDays!.isNotEmpty)
             'selected_days': item.planSelectedDays,
@@ -73,7 +47,26 @@ class OrderService {
       return row;
     }).toList();
 
-    await _client.from('order_items').insert(orderItems);
+    // Use the create_order RPC (SECURITY DEFINER) so RLS is bypassed for both
+    // guests and authenticated users — direct INSERT was blocked for guests.
+    final orderId = await _client.rpc('create_order', params: {
+      'p_user_id': userId,
+      'p_email': email,
+      'p_meal_instructions': mealInstructions,
+      'p_subtotal_pkr': subtotalPkr,
+      'p_delivery_fee_pkr': 0,
+      'p_discount_pkr': discountPkr,
+      'p_total_pkr': totalPkr,
+      'p_payment_method': paymentMethod,
+      'p_shipping_full_name': fullName,
+      'p_shipping_phone_number': phoneNumber,
+      'p_shipping_street_address': streetAddress,
+      'p_shipping_area_zone': areaZone,
+      'p_shipping_city': city,
+      'p_shipping_preferred_start_date': preferredStartDate ?? '',
+      'p_shipping_time_window': timeWindow ?? '',
+      'p_items': itemsForRpc,
+    }) as String;
 
     // Fire-and-forget: send confirmation email via Edge Function.
     // Wrapped in try/catch so an email failure never blocks the order confirmation.
