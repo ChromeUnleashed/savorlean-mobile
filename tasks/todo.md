@@ -193,29 +193,35 @@
 
 ---
 
-## Phase 6 — Push Notifications & Store Release
-**Goal:** App submitted to Play Store (and App Store if required).
+## Phase 6 — Portfolio Distribution ✅
+**Goal:** App discoverable and downloadable for portfolio purposes. Store submission skipped — this is a portfolio project, not a commercial release.
 
-### 6-1 — Push Notifications (optional)
-- [ ] Firebase project setup, `google-services.json` added
-- [ ] `firebase_messaging` package — request permission
-- [ ] Supabase Edge Function or external trigger for FCM push on order status change
+### 6-1 — Push Notifications ⛔ SKIPPED
+> Skipped: portfolio app — no Firebase infrastructure required.
+- [ ] ~~Firebase project setup, `google-services.json` added~~
+- [ ] ~~`firebase_messaging` package — request permission~~
+- [ ] ~~Supabase Edge Function or external trigger for FCM push on order status change~~
 
-### 6-2 — Android Release Build
-- [ ] Generate keystore, configure `key.properties` (gitignored)
-- [ ] `flutter build appbundle --release --dart-define-from-file=dart_defines.json`
-- [ ] Test on physical Android device
+### 6-2 — Play Store Build & Submission ⛔ SKIPPED
+> Skipped: portfolio app — not submitted to Play Store.
+- [ ] ~~Play Console app listing (title, description, screenshots, privacy policy URL)~~
+- [ ] ~~Upload AAB to internal testing track → closed testing → production~~
 
-### 6-3 — Play Store Submission
-- [ ] Play Console app listing (title, description, screenshots, privacy policy URL)
-- [ ] Upload AAB to internal testing track → closed testing → production
+### 6-3 — iOS Release ⛔ SKIPPED
+> Skipped: portfolio app — iOS build and App Store submission not required.
+- [ ] ~~Apple Developer account enrollment~~
+- [ ] ~~Xcode signing configuration~~
+- [ ] ~~`flutter build ipa --release --dart-define-from-file=dart_defines.json`~~
+- [ ] ~~App Store Connect submission~~
 
-### 6-4 — iOS Release (if required)
-- [ ] Apple Developer account enrollment
-- [ ] Xcode signing configuration
-- [ ] `flutter build ipa --release --dart-define-from-file=dart_defines.json`
-- [ ] App Store Connect submission
+### 6-4 — Release Build & Signing ✅
+- [x] Generate keystore (`savorlean.jks`), configure `android/key.properties` (gitignored)
+- [x] Configure `android/app/build.gradle.kts` with release signingConfig
+- [x] `flutter build apk --release --dart-define-from-file=dart_defines.json`
+- [x] Tested on physical Android device
 
-### 6-5 — Portfolio Distribution
-- [ ] Create GitHub Release and attach signed APK (tag: v1.0.0)
-- [ ] Add "Download the App" mobile banner to savorlean.netlify.app linking to the GitHub Release APK
+### 6-5 — Portfolio Distribution ✅
+- [x] GitHub repo made public
+- [x] README written with screenshots, download badge, feature list, and setup guide
+- [x] GitHub Release `v1.0.0` created with signed APK attached
+- [x] "Download the App" Android banner added to savorlean.netlify.app (session-scoped dismiss)
