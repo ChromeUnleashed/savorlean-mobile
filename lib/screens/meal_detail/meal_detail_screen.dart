@@ -27,11 +27,16 @@ class MealDetailScreen extends ConsumerStatefulWidget {
 
 class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
   int _quantity = 1;
+  // Both fields together cover two cases:
+  //   - user stays on screen → Timer fires after 3 s and dismisses the bar
+  //   - user navigates away → dispose() cancels the Timer and dismisses immediately
+  ScaffoldMessengerState? _snackbarMessenger;
   Timer? _snackbarTimer;
 
   @override
   void dispose() {
     _snackbarTimer?.cancel();
+    _snackbarMessenger?.hideCurrentSnackBar();
     super.dispose();
   }
 
@@ -275,6 +280,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                     // State.mounted which can return true for defunct elements.
                     if (!context.mounted) return;
                     final messenger = ScaffoldMessenger.of(context);
+                    _snackbarMessenger = messenger;
                     messenger.clearSnackBars();
                     messenger.showSnackBar(
                       SnackBar(
