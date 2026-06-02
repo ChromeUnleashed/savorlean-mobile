@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +50,16 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
   // Which days the customer wants delivery — only used for custom plans.
   // Stored as lowercase day names matching _dayOrder.
   final Set<String> _selectedDays = {};
+
+  ScaffoldMessengerState? _snackbarMessenger;
+  Timer? _snackbarTimer;
+
+  @override
+  void dispose() {
+    _snackbarTimer?.cancel();
+    _snackbarMessenger?.hideCurrentSnackBar();
+    super.dispose();
+  }
 
   void _initSelection(SubscriptionPlan plan) {
     if (_selectedDuration != null || plan.pricing.isEmpty) return;
@@ -330,8 +342,9 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                                     : null,
                               );
                           final messenger = ScaffoldMessenger.of(context);
+                          _snackbarMessenger = messenger;
                           messenger.clearSnackBars();
-                          final entry = messenger.showSnackBar(
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text('${plan.name} added to cart'),
                               action: SnackBarAction(
@@ -340,9 +353,10 @@ class _PlanDetailScreenState extends ConsumerState<PlanDetailScreen> {
                               ),
                             ),
                           );
-                          Future.delayed(
+                          _snackbarTimer?.cancel();
+                          _snackbarTimer = Timer(
                             const Duration(seconds: 3),
-                            entry.close,
+                            messenger.hideCurrentSnackBar,
                           );
                         }
                       : null,
