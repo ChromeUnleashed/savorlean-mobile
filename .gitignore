@@ -53,3 +53,6 @@ key.properties
 
 # Agent docs — the ENTIRE folder is excluded, no exceptions.
 .agent/
+
+# Claude Code local settings — per-user permission overrides, not shared config.
+.claude/settings.local.json
