@@ -50,3 +50,6 @@ dart_defines.json
 *.keystore
 key.properties
 
+
+# Agent docs — the ENTIRE folder is excluded, no exceptions.
+.agent/
