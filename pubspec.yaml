@@ -2,7 +2,7 @@ name: savorlean_mobile
 description: "SavorLean — fresh diet meal-plan delivery app for Pakistan."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.11.5
@@ -76,11 +76,11 @@ flutter_launcher_icons:
 # Run: dart run flutter_native_splash:create
 flutter_native_splash:
   color: "#FFFFFF"
-  image: "assets/icon/icon.png"
+  image: "assets/splash/splash.png"
   android: true
   ios: true
   # Android 12+ uses its own splash system with the adaptive icon.
   android_12:
-    image: "assets/icon/icon.png"
+    image: "assets/splash/splash.png"
     icon_background_color: "#FFFFFF"
     color: "#FFFFFF"

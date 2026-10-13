@@ -9,14 +9,14 @@ The Android companion to the SavorLean web app, built with Flutter. Both the web
 | Platform | Link |
 |---|---|
 | 🌐 Website | [savorlean.netlify.app](https://savorlean.netlify.app) |
-| 📱 Android App | [Download APK v1.0.0](https://github.com/ChromeUnleashed/savorlean-mobile/releases/latest/download/savorlean_release_v1.0.0.apk) |
+| 📱 Android App | [Download APK v1.0.1](https://github.com/ChromeUnleashed/savorlean-mobile/releases/latest/download/savorlean_release_v1.0.1.apk) |
 
 ---
 
 ## Download
 
-<a href="https://github.com/ChromeUnleashed/savorlean-mobile/releases/latest/download/savorlean_release_v1.0.0.apk">
-  <img src="https://img.shields.io/badge/Download-APK%20v1.0.0-brightgreen?style=for-the-badge&logo=android" alt="Download APK">
+<a href="https://github.com/ChromeUnleashed/savorlean-mobile/releases/latest/download/savorlean_release_v1.0.1.apk">
+  <img src="https://img.shields.io/badge/Download-APK%20v1.0.1-brightgreen?style=for-the-badge&logo=android" alt="Download APK">
 </a>
 
 > **Android only.** After downloading, allow installation from unknown sources if prompted.
